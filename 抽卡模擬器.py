@@ -1,4 +1,4 @@
-# 優等卡牌抽卡模擬器 - Streamlit 網頁版 + 背景音樂控制 + 傳說特效 + 音效
+# 優等卡牌抽卡模擬器 - Streamlit 網頁版 + 封面Logo + 背景音樂控制 + 傳說特效 + 音效
 import streamlit as st
 import pandas as pd
 import random
@@ -128,9 +128,14 @@ def show_card_images_with_animation(card_df):
                 st.text(f"{name}（無圖）")
         time.sleep(0.5)
 
-# --- Streamlit 前端 ---
+# --- Streamlit 前端 ---# 封面 Logo
+LOGO_PATH = "logo.png"
+if os.path.exists(LOGO_PATH):
+    st.image(LOGO_PATH, use_column_width=True)
+
 st.set_page_config(page_title="優等卡牌 抽卡模擬器")
 st.title("🎴 優等卡牌 抽卡模擬器")
+
 show_background_music_player()
 
 packs = st.number_input("請輸入要抽幾包卡（每包5張）", min_value=1, max_value=100, value=10)
