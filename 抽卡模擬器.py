@@ -132,7 +132,7 @@ def show_card_images_with_animation(card_df):
 LOGO_PATH = "logo.png"
 if os.path.exists(LOGO_PATH):
     st.image(LOGO_PATH, use_column_width=True)
-
+st.write("LOGO_EXISTS:", os.path.exists(LOGO_PATH))
 st.set_page_config(page_title="優等卡牌 抽卡模擬器")
 st.title("🎴 優等卡牌 抽卡模擬器")
 
