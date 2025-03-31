@@ -312,22 +312,39 @@ with st.expander("📚 查詢學生抽卡紀錄"):
         else:
             st.info("查無此學號的紀錄。")
 
-# 📦 一鍵打包下載 Excel 抽卡紀錄
-with st.expander("📥 匯出全部抽卡紀錄 ZIP"):
+# 📦 一鍵打包下載：每位學號合併為一份 Excel
+with st.expander("📥 匯出每位學生的合併抽卡紀錄 (ZIP)"):
     folder = "抽卡紀錄"
     if os.path.exists(folder):
-        files = [f for f in os.listdir(folder) if f.endswith(".xlsx")]
-        if files:
+        files = [f for f in os.listdir(folder) if f.endswith(".xlsx") and f.startswith("抽卡紀錄_")]
+        student_groups = {}
+
+        # 分學號彙整檔案
+        for file in files:
+            parts = file.replace(".xlsx", "").split("_")
+            if len(parts) >= 3:
+                student_id = parts[1]
+                student_groups.setdefault(student_id, []).append(file)
+
+        if student_groups:
             zip_buffer = io.BytesIO()
             with zipfile.ZipFile(zip_buffer, "w") as zipf:
-                for f in files:
-                    file_path = os.path.join(folder, f)
-                    zipf.write(file_path, arcname=f)
+                for sid, file_list in student_groups.items():
+                    all_records = []
+                    for f in file_list:
+                        df = pd.read_excel(os.path.join(folder, f))
+                        all_records.append(df)
+                    combined = pd.concat(all_records, ignore_index=True)
+                    excel_bytes = io.BytesIO()
+                    combined.to_excel(excel_bytes, index=False)
+                    excel_bytes.seek(0)
+                    zipf.writestr(f"{sid}.xlsx", excel_bytes.read())
+
             zip_buffer.seek(0)
             st.download_button(
-                "📦 下載所有抽卡紀錄 (ZIP)",
+                "📦 下載每位學生合併紀錄 (ZIP)",
                 data=zip_buffer,
-                file_name="所有抽卡紀錄.zip",
+                file_name="所有學生抽卡紀錄.zip",
                 mime="application/zip"
             )
         else:
