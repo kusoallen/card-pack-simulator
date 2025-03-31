@@ -66,7 +66,7 @@ st.markdown("""
     border-radius: 16px;
     box-shadow: 0 0 10px rgba(255,255,255,0.2);
     transition: transform 0.3s ease;
-    width: 100%;        /* 撐滿欄位 */
+    width: 50%;        /* 撐滿欄位 */
     max-width: 100px;   /* 限制每張卡片最大寬度 */
 }
 .card-block:hover {
@@ -74,8 +74,8 @@ st.markdown("""
 }
 .card-block img {
     border-radius: 12px;
-    width: 100%;
-    height: auto;
+    width: 50%;
+    height: 50%;
     object-fit: contain;
 }
 .card-block .label {
