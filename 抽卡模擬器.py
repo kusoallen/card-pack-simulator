@@ -69,12 +69,13 @@ def simulate_draws(n_packs=10):
         all_packs.append(pack)
     return pd.concat(all_packs, ignore_index=True)
 
-# 儲存抽卡紀錄
-def save_draw_result(result_df):
+# ✅ 加入學號欄位並儲存結果
+def save_draw_result(result_df, student_id):
+    result_df.insert(0, "學號", student_id)
     folder = "抽卡紀錄"
     os.makedirs(folder, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"{folder}/抽卡紀錄_{timestamp}.xlsx"
+    filename = f"{folder}/抽卡紀錄_{student_id}_{timestamp}.xlsx"
     result_df.to_excel(filename, index=False)
     return filename
 
@@ -258,29 +259,34 @@ st.title("優等卡牌 抽卡模擬器")
 
 show_background_music_player()
 
+# 🧑‍🎓 輸入學號
+student_id = st.text_input("請輸入學號：")
+
 # 🔄 模式選擇
 mode = st.radio("請選擇抽卡模式：", ["抽幾包卡（每包5張）", "單抽（1張卡）"])
 animate = st.checkbox("啟用開包動畫模式", value=True)
+if student_id:
+    if mode == "抽幾包卡（每包5張）":
+        packs = st.number_input("請輸入要抽幾包卡（每包5張）", min_value=1, max_value=5, value=1)
+        if st.button("開始抽卡！"):
+            result = simulate_draws(packs)
+            st.success(f"已抽出 {packs} 包，共 {len(result)} 張卡！")
+            saved_file = save_draw_result(result, student_id)
+            st.info(f"抽卡紀錄已儲存至：{saved_file}")
+            if animate:
+                show_card_images_with_animation(result)
+            else:
+                st.dataframe(result)
 
-if mode == "抽幾包卡（每包5張）":
-    packs = st.number_input("請輸入要抽幾包卡（每包5張）", min_value=1, max_value=5, value=1)
-    if st.button("開始抽卡！"):
-        result = simulate_draws(packs)
-        st.success(f"已抽出 {packs} 包，共 {len(result)} 張卡！")
-        saved_file = save_draw_result(result)
-        st.info(f"抽卡紀錄已儲存至：{saved_file}")
-        if animate:
-            show_card_images_with_animation(result)
-        else:
-            st.dataframe(result)
-
+    else:
+        if st.button("立即單抽！🎯"):
+            result = draw_single()
+            st.success("你抽到了 1 張卡片！")
+            saved_file = save_draw_result(result, student_id)
+            st.info(f"抽卡紀錄已儲存至：{saved_file}")
+            if animate:
+                show_card_images_with_animation(result)
+            else:
+                st.dataframe(result)
 else:
-    if st.button("立即單抽！🎯"):
-        result = draw_single()
-        st.success("你抽到了 1 張卡片！")
-        saved_file = save_draw_result(result)
-        st.info(f"抽卡紀錄已儲存至：{saved_file}")
-        if animate:
-            show_card_images_with_animation(result)
-        else:
-            st.dataframe(result)
+    st.warning("請先輸入學號才能進行抽卡。")
