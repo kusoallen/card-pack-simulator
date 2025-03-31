@@ -54,7 +54,7 @@ for _, row in cards_df.iterrows():
 def draw_pack():
     pool = [card for card in card_pool for _ in range(card[2])]
     drawn = random.sample(pool, 5)
-    #return pd.DataFrame(drawn, columns=["卡名", "稀有度", "_weight"]).drop(columns="_weight")
+    return pd.DataFrame(drawn, columns=["卡名", "稀有度", "_weight"]).drop(columns="_weight")
 
 # 模擬多包抽卡
 def simulate_draws(n_packs=10):
