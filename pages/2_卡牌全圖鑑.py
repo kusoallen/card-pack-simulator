@@ -54,7 +54,7 @@ st.markdown("""
 <style>
 .card-gallery {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 20px;
     justify-items: center;
     padding-top: 20px;
@@ -69,14 +69,14 @@ st.markdown("""
 .card-block img {
     border-radius: 12px;
     width: 90%;
-    max-height: 180px;
+    max-height: 160px;
     object-fit: contain;
 }
 .card-block .label {
     margin-top: 6px;
     font-weight: bold;
     color: gold;
-    font-size: 13px;
+    font-size: 12px;
 }
 </style>
 """, unsafe_allow_html=True)
