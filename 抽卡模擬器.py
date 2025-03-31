@@ -8,6 +8,8 @@ import os
 from PIL import Image
 import time
 import base64
+import zipfile
+import io
 
 
 st.set_page_config(page_title="優等卡牌 抽卡模擬器")
@@ -309,3 +311,26 @@ with st.expander("📚 查詢學生抽卡紀錄"):
             st.dataframe(combined)
         else:
             st.info("查無此學號的紀錄。")
+
+# 📦 一鍵打包下載 Excel 抽卡紀錄
+with st.expander("📥 匯出全部抽卡紀錄 ZIP"):
+    folder = "抽卡紀錄"
+    if os.path.exists(folder):
+        files = [f for f in os.listdir(folder) if f.endswith(".xlsx")]
+        if files:
+            zip_buffer = io.BytesIO()
+            with zipfile.ZipFile(zip_buffer, "w") as zipf:
+                for f in files:
+                    file_path = os.path.join(folder, f)
+                    zipf.write(file_path, arcname=f)
+            zip_buffer.seek(0)
+            st.download_button(
+                "📦 下載所有抽卡紀錄 (ZIP)",
+                data=zip_buffer,
+                file_name="所有抽卡紀錄.zip",
+                mime="application/zip"
+            )
+        else:
+            st.info("目前尚無任何 Excel 紀錄可下載。")
+    else:
+        st.info("尚未建立抽卡紀錄資料夾。請先執行一次抽卡。")
