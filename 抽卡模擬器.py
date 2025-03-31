@@ -120,6 +120,26 @@ def scroll_to_bottom():
         </script>
     """, height=0)
 
+
+# 抽卡邏輯（回傳一個 DataFrame）
+def draw_cards(mode):
+    df = pd.read_excel("卡池資料.xlsx")
+    probabilities = df["機率"].astype(float) / 100
+    result_df = pd.DataFrame()
+    num_cards = 1 if mode == "抽一張" else 5
+    draw = random.choices(df.index, weights=probabilities, k=num_cards)
+    result_df = df.loc[draw].reset_index(drop=True)
+    return result_df
+
+# 使用者選擇抽卡模式
+mode = st.radio("選擇抽卡模式：", ["抽一張", "抽一包（5 張）"], horizontal=True)
+
+# 按鈕觸發抽卡
+if st.button("🎲 抽卡！"):
+    result = draw_cards(mode)
+    show_card_images_with_animation(result)
+
+
 def show_card_images_with_animation(card_df):
     st.subheader("📦 點擊卡片翻面展示")
     img_folder = "card_images"
