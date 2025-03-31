@@ -193,6 +193,8 @@ def show_card_images_with_animation(card_df):
         gap: 20px;
         justify-items: center;
         padding: 20px;
+        max-width: 1100px;
+        margin: 0 auto;
     }}
     .flip-card {{
         background-color: transparent;
