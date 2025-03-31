@@ -281,7 +281,31 @@ def show_card_images_with_animation(card_df):
 # --- Streamlit 前端 ---# 封面 Logo
 
 st.title("優等卡牌 抽卡模擬器")
-# 顯示 4 張英雄卡封面
+# 顯示 4 張英雄卡封面（含 hover 特效）
+st.markdown("""
+<style>
+.hero-card-container {
+    position: relative;
+    text-align: center;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+    border-radius: 12px;
+}
+.hero-card-container:hover {
+    transform: scale(1.07);
+    box-shadow: 0 0 20px gold;
+}
+.hero-hover {
+    width: 100%;
+    border-radius: 12px;
+}
+.hero-caption {
+    font-weight: bold;
+    margin-top: 5px;
+    color: #f0e68c;
+    font-size: 18px;
+}
+</style>
+""", unsafe_allow_html=True)
 hero_folder = "card_images"
 hero_names = ["Annie老師", "紀老師", "黃老師", "Allen老師"]
 hero_cols = st.columns(4)
@@ -292,8 +316,18 @@ for i, name in enumerate(hero_names):
         if os.path.exists(try_path):
             img_path = try_path
             break
+
     if img_path:
+        with open(img_path, "rb") as f:
+            img_b64 = base64.b64encode(f.read()).decode()
+        hero_cols[i].markdown(f"""
+        <div class='hero-card-container'>
+            <img src='data:image/png;base64,{img_b64}' class='hero-hover'>
+            <div class='hero-caption'>{name}</div>
+        </div>
+        """, unsafe_allow_html=True)
         hero_cols[i].image(Image.open(img_path), use_container_width=True, caption=name)
+
 
 
 show_background_music_player()
