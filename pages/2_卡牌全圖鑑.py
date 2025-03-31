@@ -5,6 +5,23 @@ from PIL import Image
 import base64
 
 st.set_page_config(page_title="卡牌全圖鑑")
+# ✅ 背景圖片設定
+BACKGROUND_IMAGE_PATH = "background.png"  # 可改成 background.png 等
+if os.path.exists(BACKGROUND_IMAGE_PATH):
+    with open(BACKGROUND_IMAGE_PATH, "rb") as f:
+        bg_bytes = f.read()
+        bg_base64 = base64.b64encode(bg_bytes).decode()
+        page_bg = f"""
+        <style>
+        [data-testid="stApp"] {{
+            background-image: url("data:image/jpg;base64,{bg_base64}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }}
+        </style>
+        """
+        st.markdown(page_bg, unsafe_allow_html=True)
 st.title("🃏 優等卡牌全圖鑑")
 
 # 載入卡牌資料
