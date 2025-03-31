@@ -188,15 +188,16 @@ def show_card_images_with_animation(card_df):
     final_html = f"""
     <style>
     .card-container {{
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
+        justify-items: center;
+        padding: 20px;
     }}
     .flip-card {{
         background-color: transparent;
-        width: 240px;
-        height: 350px;
+        width: 200px;
+        height: 290px;
         perspective: 1000px;
         position: relative;
         transition: box-shadow 0.5s ease-in-out;
@@ -253,7 +254,7 @@ def show_card_images_with_animation(card_df):
     </div>
     """
 
-    components.html(final_html, height=600 + (len(card_df) // 5) * 250, scrolling=True)
+    components.html(final_html, height=600 + (len(card_df) // 5) * 270, scrolling=True)
 
 # --- Streamlit 前端 ---# 封面 Logo
 LOGO_PATH = "logo.png"
