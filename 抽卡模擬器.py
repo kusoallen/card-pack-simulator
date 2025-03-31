@@ -12,7 +12,7 @@ import zipfile
 import io
 import pytz
 
-st.set_page_config(page_title="優等卡牌 抽卡模擬器")
+st.set_page_config(page_title="優等卡牌 抽卡模擬器", layout="wide")
 
 # ✅ 背景圖片設定
 BACKGROUND_IMAGE_PATH = "background.png"  # 可改成 background.png 等
@@ -253,7 +253,7 @@ def show_card_images_with_animation(card_df):
     {html_cards}
     </div>
     """
-    components.html(final_html, height=750, scrolling=False)
+    components.html(final_html, height=750, scrolling=True)
 
 
 # --- Streamlit 前端 ---# 封面 Logo
