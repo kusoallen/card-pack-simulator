@@ -74,6 +74,7 @@ def simulate_draws(n_packs=10):
 # ✅ 加入學號欄位並儲存結果
 def save_draw_result(result_df, student_id):
     result_df.insert(0, "學號", student_id)
+    result_df["抽取時間"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     folder = "抽卡紀錄"
     os.makedirs(folder, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
