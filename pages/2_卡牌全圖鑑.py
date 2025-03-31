@@ -5,7 +5,6 @@ from PIL import Image
 import base64
 
 st.set_page_config(page_title="卡牌全圖鑑")
-
 # ✅ 背景圖片設定
 BACKGROUND_IMAGE_PATH = "background.png"  # 可改成 background.png 等
 if os.path.exists(BACKGROUND_IMAGE_PATH):
@@ -23,6 +22,7 @@ if os.path.exists(BACKGROUND_IMAGE_PATH):
         </style>
         """
         st.markdown(page_bg, unsafe_allow_html=True)
+
 st.title("🃏 優等卡牌全圖鑑")
 
 # 載入卡牌資料
@@ -54,7 +54,7 @@ st.markdown("""
 <style>
 .card-gallery {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
     justify-items: center;
     padding-top: 20px;
@@ -69,14 +69,14 @@ st.markdown("""
 .card-block img {
     border-radius: 12px;
     width: 100%;
-    max-height: 180px;
+    max-height: 220px;
     object-fit: contain;
 }
 .card-block .label {
     margin-top: 6px;
     font-weight: bold;
     color: gold;
-    font-size: 13px;
+    font-size: 14px;
 }
 </style>
 """, unsafe_allow_html=True)
