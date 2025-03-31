@@ -326,7 +326,7 @@ for i, name in enumerate(hero_names):
             <div class='hero-caption'>{name}</div>
         </div>
         """, unsafe_allow_html=True)
-        hero_cols[i].image(Image.open(img_path), use_container_width=True, caption=name)
+       
 
 
 
