@@ -26,7 +26,7 @@ with st.sidebar:
 
 # 根據篩選條件過濾卡牌
 if name_query:
-    cards_df = cards_df[cards_df["卡名"].str.contains(name_query, case=False, na=False)]
+    cards_df = cards_df[cards_df["名稱"].str.contains(name_query, case=False, na=False)]
 if rarity_choice != "全部":
     cards_df = cards_df[cards_df["稀有度"] == rarity_choice]
 cards_df = cards_df[cards_df["類型"].isin(type_choice)]
@@ -66,7 +66,7 @@ st.markdown("""
 html = "<div class='card-gallery'>"
 
 for _, row in cards_df.iterrows():
-    name = row["卡名"]
+    name = row["名稱"]
     rarity = row["稀有度"]
     img_path = None
     for ext in [".png", ".jpg", ".jpeg", ".webp"]:
