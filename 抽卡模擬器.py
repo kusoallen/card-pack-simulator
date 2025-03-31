@@ -259,7 +259,7 @@ animate = st.checkbox("啟用開包動畫模式", value=True)
 if st.button("開始抽卡！"):
     result = simulate_draws(packs)
     st.success(f"已抽出 {packs} 包，共 {len(result)} 張卡！")
-    st.dataframe(result.reset_index(drop=True))
+    #st.dataframe(result.reset_index(drop=True))
 
     # 儲存抽卡紀錄
     saved_file = save_draw_result(result)
