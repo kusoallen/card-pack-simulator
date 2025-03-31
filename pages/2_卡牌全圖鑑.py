@@ -117,5 +117,5 @@ for idx, (_, row) in enumerate(cards_df.iterrows()):
 
         # 顯示卡片在對應欄位
         with cols[idx % 3]:
-            st.image(f"data:image/png;base64,{img_b64}", use_column_width=True)
+            st.image(f"data:image/png;base64,{img_b64}", use_container_width=True)
             st.markdown(f"<div style='text-align: center; color: gold; font-weight: bold;'>{name}（{rarity}）</div>", unsafe_allow_html=True)
