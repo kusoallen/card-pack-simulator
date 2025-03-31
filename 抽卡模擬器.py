@@ -148,8 +148,8 @@ def show_card_images_with_animation(card_df):
     """
     if len(card_df) == 1:
         card_style = "flex"
-        card_width = 260
-        card_height = 370
+        card_width = 520
+        card_height = 740
         container_css = """
         .card-container {
             display: flex;
