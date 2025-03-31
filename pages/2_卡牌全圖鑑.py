@@ -68,8 +68,8 @@ st.markdown("""
 }
 .card-block img {
     border-radius: 12px;
-    width: 90%;
-    max-height: 220px;
+    width: 50%;
+    max-height: 100px;
     object-fit: contain;
 }
 .card-block .label {
