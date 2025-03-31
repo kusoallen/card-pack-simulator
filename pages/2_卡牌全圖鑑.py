@@ -5,49 +5,7 @@ from PIL import Image
 import base64
 
 st.set_page_config(page_title="卡牌全圖鑑")
-# ✅ 背景圖片設定
-BACKGROUND_IMAGE_PATH = "background.png"  # 可改成 background.png 等
-if os.path.exists(BACKGROUND_IMAGE_PATH):
-    with open(BACKGROUND_IMAGE_PATH, "rb") as f:
-        bg_bytes = f.read()
-        bg_base64 = base64.b64encode(bg_bytes).decode()
-        page_bg = f"""
-        <style>
-        [data-testid="stApp"] {{
-            background-image: url("data:image/jpg;base64,{bg_base64}");
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }}
-        </style>
-        """
-        st.markdown(page_bg, unsafe_allow_html=True)
-
 st.title("🃏 優等卡牌全圖鑑")
-
-
-
-# 🔍 搜尋與篩選
-col1, col2 = st.columns([2, 1])
-with col1:
-    search_name = st.text_input("🔍 搜尋卡名：")
-with col2:
-    unique_rarities = sorted([r for r in cards_df["稀有度"].dropna().unique() if isinstance(r, str)])
-    rarity_filter = st.selectbox("🌟 篩選稀有度：", ["全部"] + unique_rarities)
-
-# 套用搜尋與篩選
-if search_name:
-    cards_df = cards_df[cards_df["卡名"].str.contains(search_name, case=False, na=False)]
-if rarity_filter != "全部":
-    cards_df = cards_df[cards_df["稀有度"] == rarity_filter]
-if search_name:
-    cards_df = cards_df[cards_df["卡名"].str.contains(search_name, case=False, na=False)]
-if rarity_filter != "全部":
-    cards_df = cards_df[cards_df["稀有度"] == rarity_filter]
-if search_name:
-    cards_df = cards_df[cards_df["卡名"].str.contains(search_name, case=False, na=False)]
-if rarity_filter != "全部":
-    cards_df = cards_df[cards_df["稀有度"] == rarity_filter]
 
 # 載入卡牌資料
 cards_df = pd.read_excel("優等卡牌 的副本.xlsx", sheet_name="工作表4")
@@ -57,12 +15,28 @@ card_folder = "card_images"
 cards_df = cards_df[cards_df["類型"].isin(["學生卡", "知識卡", "武器卡"])]
 cards_df = cards_df.sort_values(by=["稀有度", "名稱"])
 
-# 顯示所有卡片
+# 🔍 搜尋與篩選功能
+with st.sidebar:
+    st.header("🔎 搜尋與篩選")
+    name_query = st.text_input("卡名關鍵字：")
+    rarities = sorted([r for r in cards_df["稀有度"].dropna().unique() if isinstance(r, str)])
+    rarity_choice = st.selectbox("選擇稀有度：", ["全部"] + rarities)
+    types = sorted(cards_df["類型"].unique())
+    type_choice = st.multiselect("卡牌類型：", options=types, default=types)
+
+# 根據篩選條件過濾卡牌
+if name_query:
+    cards_df = cards_df[cards_df["卡名"].str.contains(name_query, case=False, na=False)]
+if rarity_choice != "全部":
+    cards_df = cards_df[cards_df["稀有度"] == rarity_choice]
+cards_df = cards_df[cards_df["類型"].isin(type_choice)]
+
+# 顯示卡片區塊
 st.markdown("""
 <style>
 .card-gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 20px;
     justify-items: center;
     padding-top: 20px;
@@ -70,9 +44,9 @@ st.markdown("""
 .card-block {
     text-align: center;
     background: rgba(255,255,255,0.05);
-    padding: 10px;
+    padding: 12px;
     border-radius: 12px;
-    box-shadow: 0 0 6px rgba(255,255,255,0.1);
+    box-shadow: 0 0 8px rgba(255,255,255,0.2);
 }
 .card-block img {
     border-radius: 12px;
@@ -81,9 +55,10 @@ st.markdown("""
     object-fit: contain;
 }
 .card-block .label {
-    margin-top: 5px;
+    margin-top: 6px;
     font-weight: bold;
     color: gold;
+    font-size: 16px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -111,4 +86,4 @@ for _, row in cards_df.iterrows():
         """
 
 html += "</div>"
-st.components.v1.html(html, height=1000, scrolling=True)
+st.components.v1.html(html, height=1200, scrolling=True)
