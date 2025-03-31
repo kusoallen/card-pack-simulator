@@ -110,4 +110,4 @@ for _, row in cards_df.iterrows():
         """
 
 html += "</div>"
-st.components.v1.html(html, height=1300, scrolling=True)
+st.components.v1.html(html, height=1500, scrolling=True)
