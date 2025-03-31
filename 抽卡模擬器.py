@@ -133,11 +133,24 @@ def scroll_to_bottom():
 
 def show_card_images_with_animation(card_df):
     st.subheader("點擊卡片翻面展示")
+    import mimetypes
     img_folder = "card_images"
     back_path = os.path.join(img_folder, "card_back.png")
     if not os.path.exists(back_path):
         st.warning("請提供統一卡背圖 card_back.png 放在 card_images 資料夾內")
         return
+
+    # Base64 讀入音效
+    def encode_audio(file_path):
+        if not os.path.exists(file_path):
+            return ""
+        mime_type, _ = mimetypes.guess_type(file_path)
+        with open(file_path, "rb") as f:
+            return f"data:{mime_type};base64," + base64.b64encode(f.read()).decode()
+
+    sfx_legendary = encode_audio("sounds/legendary.mp3")
+    sfx_epic = encode_audio("sounds/epic.mp3")
+    sfx_rare = encode_audio("sounds/rare.mp3")
 
     card_width = 200
     card_height = 290
@@ -159,7 +172,6 @@ def show_card_images_with_animation(card_df):
     }}
     """
 
-    sound_played = False
     back_b64 = base64.b64encode(open(back_path, "rb").read()).decode()
     html_cards = ""
 
@@ -178,21 +190,20 @@ def show_card_images_with_animation(card_df):
             rarity_class = ""
             if rarity == "稀有":
                 rarity_class = "hover-glow-white"
+                sound_data = sfx_rare
             elif rarity == "史詩":
                 rarity_class = "hover-glow-purple"
+                sound_data = sfx_epic
             elif rarity == "傳說":
                 rarity_class = "hover-glow-gold"
+                sound_data = sfx_legendary
+            else:
+                sound_data = ""
 
-            sound_attr = ""
-            if rarity == "傳說":
-                sound_attr = "var audio = new Audio('sounds/legendary.mp3'); audio.play();"
-            elif rarity == "史詩":
-                sound_attr = "var audio = new Audio('sounds/epic.mp3'); audio.play();"
-            elif rarity == "稀有":
-                sound_attr = "var audio = new Audio('sounds/rare.mp3'); audio.play();"
+            audio_tag = f"var a=new Audio('{sound_data}');a.play();" if sound_data else ""
 
             html_cards += f"""
-            <div class="flip-card {rarity_class}" onclick="this.classList.add('flipped'); {sound_attr}">
+            <div class="flip-card {rarity_class}" onclick="this.classList.add('flipped'); {audio_tag}">
               <div class="flip-card-inner">
                 <div class="flip-card-front">
                   <img src="data:image/png;base64,{back_b64}" width="100%">
@@ -204,15 +215,6 @@ def show_card_images_with_animation(card_df):
               </div>
             </div>
             """
-            
-            elif rarity == "史詩" and not sound_played:
-                play_sound("sounds/epic.mp3")
-                sound_played = True
-            elif rarity == "稀有" and not sound_played:
-                play_sound("sounds/rare.mp3")
-                sound_played = True
-                play_sound("sounds/legendary.mp3")
-                sound_played = True
 
         if (idx + 1) % 5 == 0:
             html_cards += "<div style='flex-basis: 100%; height: 10px;'></div>"
@@ -274,10 +276,6 @@ def show_card_images_with_animation(card_df):
     </div>
     """
     components.html(final_html, height=750, scrolling=True)
-
-
-
-
 
 
 # --- Streamlit 前端 ---# 封面 Logo
