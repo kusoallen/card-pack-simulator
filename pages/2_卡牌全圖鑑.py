@@ -44,6 +44,10 @@ if search_name:
     cards_df = cards_df[cards_df["卡名"].str.contains(search_name, case=False, na=False)]
 if rarity_filter != "全部":
     cards_df = cards_df[cards_df["稀有度"] == rarity_filter]
+if search_name:
+    cards_df = cards_df[cards_df["卡名"].str.contains(search_name, case=False, na=False)]
+if rarity_filter != "全部":
+    cards_df = cards_df[cards_df["稀有度"] == rarity_filter]
 
 # 載入卡牌資料
 cards_df = pd.read_excel("優等卡牌 的副本.xlsx", sheet_name="工作表4")
