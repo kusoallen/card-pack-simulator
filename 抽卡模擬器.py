@@ -51,6 +51,11 @@ for _, row in cards_df.iterrows():
     card_pool.append((row["名稱"], row["稀有度"], weight))
 
 # 抽卡函數
+def draw_single():
+    pool = [card for card in card_pool for _ in range(card[2])]
+    drawn = random.sample(pool, 1)
+    return pd.DataFrame(drawn, columns=["卡名", "稀有度", "_weight"]).drop(columns="_weight")
+
 def draw_pack():
     pool = [card for card in card_pool for _ in range(card[2])]
     drawn = random.sample(pool, 5)
@@ -252,36 +257,30 @@ if os.path.exists(LOGO_PATH):
 st.title("優等卡牌 抽卡模擬器")
 
 show_background_music_player()
-# 📦 選擇抽卡方式
-packs = st.number_input("請輸入要抽幾包卡（每包5張）", min_value=1, max_value=5, value=1)
+
+# 🔄 模式選擇
+mode = st.radio("請選擇抽卡模式：", ["抽幾包卡（每包5張）", "單抽（1張卡）"])
 animate = st.checkbox("啟用開包動畫模式", value=True)
 
-if st.button("開始抽卡！"):
-    result = simulate_draws(packs)
-    st.success(f"已抽出 {packs} 包，共 {len(result)} 張卡！")
-    #st.dataframe(result.reset_index(drop=True))
+if mode == "抽幾包卡（每包5張）":
+    packs = st.number_input("請輸入要抽幾包卡（每包5張）", min_value=1, max_value=5, value=1)
+    if st.button("開始抽卡！"):
+        result = simulate_draws(packs)
+        st.success(f"已抽出 {packs} 包，共 {len(result)} 張卡！")
+        saved_file = save_draw_result(result)
+        st.info(f"抽卡紀錄已儲存至：{saved_file}")
+        if animate:
+            show_card_images_with_animation(result)
+        else:
+            st.dataframe(result)
 
-    # 儲存抽卡紀錄
-    saved_file = save_draw_result(result)
-    st.info(f"抽卡紀錄已儲存至：{saved_file}")
-
-    # 顯示卡圖
-    if animate:
-        show_card_images_with_animation(result)
-    else:
-        st.subheader("抽卡圖像展示")
-        img_folder = "card_images"
-        cols = st.columns(5)
-        for idx, name in enumerate(result["卡名"]):
-            img_path = None
-            for ext in [".png", ".jpg", ".jpeg", ".webp"]:
-                try_path = os.path.join(img_folder, f"{name}{ext}")
-                if os.path.exists(try_path):
-                    img_path = try_path
-                    break
-            if img_path:
-                with cols[idx % 5]:
-                    st.image(Image.open(img_path), caption=name, use_container_width=True)
-            else:
-                with cols[idx % 5]:
-                    st.text(name + "（無圖）")
+else:
+    if st.button("立即單抽！🎯"):
+        result = draw_single()
+        st.success("你抽到了 1 張卡片！")
+        saved_file = save_draw_result(result)
+        st.info(f"抽卡紀錄已儲存至：{saved_file}")
+        if animate:
+            show_card_images_with_animation(result)
+        else:
+            st.dataframe(result)
