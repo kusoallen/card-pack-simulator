@@ -132,6 +132,23 @@ def scroll_to_bottom():
     """, height=0)
 
 def show_card_images_with_animation(card_df):
+    card_width = 200
+    card_height = 290
+    container_css = """
+    
+    """
+    if len(card_df) == 1:
+        card_width = 260
+        card_height = 370
+        container_css = """
+        .card-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 30px;
+        }
+        """
     card_style = "grid"
     card_width = 200
     card_height = 290
@@ -200,6 +217,13 @@ def show_card_images_with_animation(card_df):
 
     final_html = f"""
     <style>
+    {container_css}
+    px;
+        height: {card_height}px;
+        perspective: 1000px;
+        position: relative;
+        transition: box-shadow 0.5s ease-in-out;
+    }}
     .card-container {{
         {'display: flex; justify-content: center; align-items: center; height: 100%; padding: 30px;' if len(card_df) == 1 else 'display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; justify-items: center; padding: 20px; max-width: 1100px; margin: 0 auto;'}
     }}
@@ -294,6 +318,7 @@ def show_card_images_with_animation(card_df):
     </div>
     """
     components.html(final_html, height=750, scrolling=True)
+
 
 
 
