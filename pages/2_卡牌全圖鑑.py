@@ -43,6 +43,20 @@ with st.sidebar:
     rarity_choice = st.selectbox("選擇稀有度：", ["全部"] + rarities)
     types = sorted(cards_df["類型"].unique())
     type_choice = st.multiselect("卡牌類型：", options=types, default=types)
+    st.divider()
+    st.subheader("📊 進階搜尋")
+
+# KN 篩選
+    min_kn = st.number_input("KN 最小值", min_value=0, value=0)
+    max_kn = st.number_input("KN 最大值", min_value=0, value=10)
+
+# KN 排序
+    kn_sort = st.selectbox("KN 排序方式", ["無排序", "由小到大", "由大到小"])
+
+# 科目篩選與排序
+    subjects = sorted(cards_df["科目"].dropna().unique())
+    subject_choice = st.multiselect("科目篩選", options=subjects, default=subjects)
+    subject_sort = st.selectbox("科目排序方式", ["不排序", "A → Z", "Z → A"]) 
 
 # 根據篩選條件過濾卡牌
 if name_query:
@@ -50,6 +64,24 @@ if name_query:
 if rarity_choice != "全部":
     cards_df = cards_df[cards_df["稀有度"] == rarity_choice]
 cards_df = cards_df[cards_df["類型"].isin(type_choice)]
+# KN 篩選
+cards_df = cards_df[(cards_df["KN"] >= min_kn) & (cards_df["KN"] <= max_kn)]
+
+# 科目篩選
+cards_df = cards_df[cards_df["科目"].isin(subject_choice)]
+
+# KN 排序
+if kn_sort == "由小到大":
+    cards_df = cards_df.sort_values(by="KN", ascending=True)
+elif kn_sort == "由大到小":
+    cards_df = cards_df.sort_values(by="KN", ascending=False)
+
+# 科目排序
+if subject_sort == "A → Z":
+    cards_df = cards_df.sort_values(by="科目", ascending=True)
+elif subject_sort == "Z → A":
+    cards_df = cards_df.sort_values(by="科目", ascending=False)
+
 
 # ✅ 樣式設定（3 欄顯示）
 st.markdown("""
@@ -115,6 +147,9 @@ for idx, (_, row) in enumerate(cards_df.iterrows()):
         with cols[idx % 3]:
             st.image(f"data:image/png;base64,{img_b64}", use_container_width=True)
             st.markdown(
-                f"<div style='text-align: center; color: gold; font-weight: bold;'>{name}（{rarity}）</div>",
+                f"""
+                <div style='text-align: center; color: gold; font-weight: bold;'>{name}（{rarity}）</div>
+                <div style='text-align: center; color: white; font-size: 13px;'>KN 消耗：{row["KN"]}</div>
+                """,
                 unsafe_allow_html=True
             )
