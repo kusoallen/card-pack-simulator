@@ -285,23 +285,6 @@ if os.path.exists(LOGO_PATH):
 
 st.title("優等卡牌 抽卡模擬器")
 
-# 🔊 背景音樂與音量控制（隱藏播放器，顯示滑桿）
-import mimetypes
-bgm_path = "sounds/bgm.mp3"
-if os.path.exists(bgm_path):
-    mime_type, _ = mimetypes.guess_type(bgm_path)
-    with open(bgm_path, "rb") as f:
-        bgm_b64 = base64.b64encode(f.read()).decode()
-    st.markdown(f"""
-    <audio id='bgm-audio' autoplay loop style='display:none'>
-        <source src="data:{mime_type};base64,{bgm_b64}" type="{mime_type}">
-    </audio>
-    <div style='text-align:center; margin-top:0; margin-bottom:20px;'>
-        <label for='volume'>🔊 背景音樂音量：</label>
-        <input type='range' id='volume' min='0' max='1' step='0.01' value='1'
-               onchange="document.getElementById('bgm-audio').volume = this.value">
-    </div>
-    """, unsafe_allow_html=True)
 
 show_background_music_player()
 
