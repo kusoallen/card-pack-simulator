@@ -258,7 +258,7 @@ mode = st.radio("選擇抽卡模式：", ["抽一包（5張）", "只抽一張�
 animate = st.checkbox("啟用開包動畫模式", value=True)
 
 # 📋 抽卡邏輯示意（請根據實際邏輯更新）
-all_cards = pd.read_excel("卡牌資料.xlsx")  # 或其他來源
+all_cards = pd.read_excel("優等卡牌 的副本.xlsx")  # 或其他來源
 
 def draw_one_card():
     return all_cards.sample(n=1).reset_index(drop=True)
