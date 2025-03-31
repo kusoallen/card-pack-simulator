@@ -109,13 +109,12 @@ for idx, (_, row) in enumerate(cards_df.iterrows()):
             break
 
     if img_path:
-        img = Image.open(img_path)
-        img.thumbnail((300, 420))
-        buffer = BytesIO()
-        img.save(buffer, format="PNG")
-        img_b64 = base64.b64encode(buffer.getvalue()).decode()
+        with open(img_path, "rb") as f:
+            img_b64 = base64.b64encode(f.read()).decode()
 
-        # 顯示卡片在對應欄位
         with cols[idx % 3]:
             st.image(f"data:image/png;base64,{img_b64}", use_container_width=True)
-            st.markdown(f"<div style='text-align: center; color: gold; font-weight: bold;'>{name}（{rarity}）</div>", unsafe_allow_html=True)
+            st.markdown(
+                f"<div style='text-align: center; color: gold; font-weight: bold;'>{name}（{rarity}）</div>",
+                unsafe_allow_html=True
+            )
