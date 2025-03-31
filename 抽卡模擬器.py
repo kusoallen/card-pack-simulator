@@ -121,7 +121,7 @@ def scroll_to_bottom():
     """, height=0)
 
 def show_card_images_with_animation(card_df):
-    st.subheader("📦 點擊卡片翻面展示")
+    st.subheader("點擊卡片翻面展示")
     img_folder = "card_images"
     back_path = os.path.join(img_folder, "card_back.png")
     if not os.path.exists(back_path):
@@ -249,11 +249,11 @@ LOGO_PATH = "logo.png"
 if os.path.exists(LOGO_PATH):
     st.image(LOGO_PATH, use_container_width=True)
 
-st.title("🎴 優等卡牌 抽卡模擬器")
+st.title("優等卡牌 抽卡模擬器")
 
 show_background_music_player()
 
-packs = st.number_input("請輸入要抽幾包卡（每包5張）", min_value=1, max_value=100, value=10)
+packs = st.number_input("請輸入要抽幾包卡（每包5張）", min_value=1, max_value=5, value=1)
 animate = st.checkbox("啟用開包動畫模式", value=True)
 
 if st.button("開始抽卡！"):
@@ -269,7 +269,7 @@ if st.button("開始抽卡！"):
     if animate:
         show_card_images_with_animation(result)
     else:
-        st.subheader("📷 抽卡圖像展示")
+        st.subheader("抽卡圖像展示")
         img_folder = "card_images"
         cols = st.columns(5)
         for idx, name in enumerate(result["卡名"]):
