@@ -281,6 +281,19 @@ def show_card_images_with_animation(card_df):
 # --- Streamlit 前端 ---# 封面 Logo
 
 st.title("優等卡牌 抽卡模擬器")
+# 顯示 4 張英雄卡封面
+hero_folder = "card_images"
+hero_names = ["Annie老師", "紀老師", "黃老師", "Allen老師"]
+hero_cols = st.columns(4)
+for i, name in enumerate(hero_names):
+    img_path = None
+    for ext in [".png", ".jpg", ".jpeg", ".webp"]:
+        try_path = os.path.join(hero_folder, f"{name}{ext}")
+        if os.path.exists(try_path):
+            img_path = try_path
+            break
+    if img_path:
+        hero_cols[i].image(Image.open(img_path), use_column_width=True, caption=name)
 
 
 show_background_music_player()
