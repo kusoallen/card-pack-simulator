@@ -252,14 +252,27 @@ if os.path.exists(LOGO_PATH):
 st.title("優等卡牌 抽卡模擬器")
 
 show_background_music_player()
-
-packs = st.number_input("請輸入要抽幾包卡（每包5張）", min_value=1, max_value=5, value=1)
+# 📦 選擇抽卡方式
+mode = st.radio("選擇抽卡模式：", ["抽一包（5張）", "只抽一張卡"])
+#packs = st.number_input("請輸入要抽幾包卡（每包5張）", min_value=1, max_value=5, value=1)
 animate = st.checkbox("啟用開包動畫模式", value=True)
 
-if st.button("開始抽卡！"):
-    result = simulate_draws(packs)
-    st.success(f"已抽出 {packs} 包，共 {len(result)} 張卡！")
-    #st.dataframe(result.reset_index(drop=True))
+# 📋 抽卡邏輯示意（請根據實際邏輯更新）
+all_cards = pd.read_excel("卡牌資料.xlsx")  # 或其他來源
+
+def draw_one_card():
+    return all_cards.sample(n=1).reset_index(drop=True)
+
+def draw_five_cards():
+    result = all_cards.sample(n=5).reset_index(drop=True)
+    return result
+
+# 🚀 執行抽卡
+if st.button("🎲 抽卡！"):
+    if mode == "只抽一張卡":
+        card_df = draw_one_card()
+    else:
+        card_df = draw_five_cards()
 
     # 儲存抽卡紀錄
     saved_file = save_draw_result(result)
