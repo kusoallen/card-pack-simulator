@@ -183,8 +183,16 @@ def show_card_images_with_animation(card_df):
             elif rarity == "傳說":
                 rarity_class = "hover-glow-gold"
 
+            sound_attr = ""
+            if rarity == "傳說":
+                sound_attr = "var audio = new Audio('sounds/legendary.mp3'); audio.play();"
+            elif rarity == "史詩":
+                sound_attr = "var audio = new Audio('sounds/epic.mp3'); audio.play();"
+            elif rarity == "稀有":
+                sound_attr = "var audio = new Audio('sounds/rare.mp3'); audio.play();"
+
             html_cards += f"""
-            <div class="flip-card {rarity_class}" onclick="this.classList.add('flipped')">
+            <div class="flip-card {rarity_class}" onclick="this.classList.add('flipped'); {sound_attr}">
               <div class="flip-card-inner">
                 <div class="flip-card-front">
                   <img src="data:image/png;base64,{back_b64}" width="100%">
@@ -196,7 +204,13 @@ def show_card_images_with_animation(card_df):
               </div>
             </div>
             """
-            if rarity == "傳說" and not sound_played:
+            
+            elif rarity == "史詩" and not sound_played:
+                play_sound("sounds/epic.mp3")
+                sound_played = True
+            elif rarity == "稀有" and not sound_played:
+                play_sound("sounds/rare.mp3")
+                sound_played = True
                 play_sound("sounds/legendary.mp3")
                 sound_played = True
 
@@ -260,6 +274,7 @@ def show_card_images_with_animation(card_df):
     </div>
     """
     components.html(final_html, height=750, scrolling=True)
+
 
 
 
