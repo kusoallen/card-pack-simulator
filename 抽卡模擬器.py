@@ -85,7 +85,7 @@ def save_draw_result(result_df, student_id):
     return filename
 
 # 顯示背景音樂播放器（需使用者手動播放）
-def :
+def show_background_music_player():
     music_path = "sounds/bgm.mp3"
     if os.path.exists(music_path):
         with open(music_path, "rb") as f:
