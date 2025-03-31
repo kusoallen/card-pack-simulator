@@ -96,7 +96,10 @@ main > div:has(.card-gallery) {
 </style>
 """, unsafe_allow_html=True)
 # ✅ 卡片顯示 HTML 組裝
-html = "<div class='card-gallery'>"
+html = """
+<div style='width: 100vw; display: flex; justify-content: center;'>
+  <div class='card-gallery'>
+"""
 
 for _, row in cards_df.iterrows():
     name = row["名稱"]
@@ -123,5 +126,9 @@ for _, row in cards_df.iterrows():
         </div>
         """
 
-html += "</div>"
+html += """
+  </div>
+</div>
+"""
+
 st.components.v1.html(html, height=1600, scrolling=True)
