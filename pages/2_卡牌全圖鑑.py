@@ -68,7 +68,7 @@ st.markdown("""
 }
 .card-block img {
     border-radius: 12px;
-    width: 100%;
+    width: 90%;
     max-height: 220px;
     object-fit: contain;
 }
@@ -104,4 +104,4 @@ for _, row in cards_df.iterrows():
         """
 
 html += "</div>"
-st.components.v1.html(html, height=1200, scrolling=True)
+st.components.v1.html(html, height=3000, scrolling=False)
