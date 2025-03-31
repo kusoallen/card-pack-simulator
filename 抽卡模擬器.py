@@ -311,7 +311,6 @@ with st.expander("📚 查詢學生抽卡紀錄"):
             st.dataframe(combined)
         else:
             st.info("查無此學號的紀錄。")
-
 # 📦 一鍵打包下載：每位學號合併為一份 Excel
 with st.expander("📥 匯出每位學生的合併抽卡紀錄 (ZIP)"):
     folder = "抽卡紀錄"
@@ -332,13 +331,18 @@ with st.expander("📥 匯出每位學生的合併抽卡紀錄 (ZIP)"):
                 for sid, file_list in student_groups.items():
                     all_records = []
                     for f in file_list:
-                        df = pd.read_excel(os.path.join(folder, f))
-                        all_records.append(df)
-                    combined = pd.concat(all_records, ignore_index=True)
-                    excel_bytes = io.BytesIO()
-                    combined.to_excel(excel_bytes, index=False)
-                    excel_bytes.seek(0)
-                    zipf.writestr(f"{sid}.xlsx", excel_bytes.read())
+                        try:
+                            df = pd.read_excel(os.path.join(folder, f), sheet_name=0)
+                            if not df.empty:
+                                all_records.append(df)
+                        except Exception as e:
+                            st.warning(f"{f} 無法讀取，已略過：{e}")
+                    if all_records:
+                        combined = pd.concat(all_records, ignore_index=True)
+                        excel_bytes = io.BytesIO()
+                        combined.to_excel(excel_bytes, index=False)
+                        excel_bytes.seek(0)
+                        zipf.writestr(f"{sid}.xlsx", excel_bytes.read())
 
             zip_buffer.seek(0)
             st.download_button(
