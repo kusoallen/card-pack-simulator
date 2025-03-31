@@ -4,7 +4,7 @@ import os
 from PIL import Image
 import base64
 
-st.set_page_config(page_title="卡牌全圖鑑", layout="wide")
+st.set_page_config(page_title="卡牌全圖鑑")
 # ✅ 背景圖片設定
 BACKGROUND_IMAGE_PATH = "background.png"  # 可改成 background.png 等
 if os.path.exists(BACKGROUND_IMAGE_PATH):
@@ -81,7 +81,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-html = "<div class='card-gallery'>"
+html = "<div class='card-gallery' style='display: flex; justify-content: center; align-items: center; height: 100%; padding: 30px;' if len(cards_df) == 1 else 'display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; justify-items: center; padding: 20px; max-width: 1100px; margin: 0 auto;'>"
 
 for _, row in cards_df.iterrows():
     name = row["名稱"]
@@ -104,4 +104,4 @@ for _, row in cards_df.iterrows():
         """
 
 html += "</div>"
-st.components.v1.html(html, height=3000, scrolling=False)
+st.components.v1.html(html, height=1200, scrolling=True)
