@@ -92,9 +92,9 @@ st.markdown("""
 main > div:has(.card-gallery) {
     max-width: 1400px !important;
     margin: 0 auto;
+}
 </style>
 """, unsafe_allow_html=True)
-}
 # ✅ 卡片顯示 HTML 組裝
 html = "<div class='card-gallery'>"
 
