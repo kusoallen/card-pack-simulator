@@ -96,12 +96,9 @@ main > div:has(.card-gallery) {
 </style>
 """, unsafe_allow_html=True)
 # ✅ 卡片顯示 HTML 組裝
-html = """
-<div style='width: 100vw; display: flex; justify-content: center;'>
-  <div class='card-gallery'>
-"""
+cols = st.columns(3)
 
-for _, row in cards_df.iterrows():
+for idx, (_, row) in enumerate(cards_df.iterrows()):
     name = row["名稱"]
     rarity = row["稀有度"]
     img_path = None
@@ -112,23 +109,13 @@ for _, row in cards_df.iterrows():
             break
 
     if img_path:
-        # 縮圖 + 轉 base64
         img = Image.open(img_path)
         img.thumbnail((300, 420))
         buffer = BytesIO()
         img.save(buffer, format="PNG")
         img_b64 = base64.b64encode(buffer.getvalue()).decode()
 
-        html += f"""
-        <div class='card-block'>
-            <img src='data:image/png;base64,{img_b64}' alt='{name}'>
-            <div class='label'>{name}（{rarity}）</div>
-        </div>
-        """
-
-html += """
-  </div>
-</div>
-"""
-
-st.components.v1.html(html, height=1600, scrolling=True)
+        # 顯示卡片在對應欄位
+        with cols[idx % 3]:
+            st.image(f"data:image/png;base64,{img_b64}", use_column_width=True)
+            st.markdown(f"<div style='text-align: center; color: gold; font-weight: bold;'>{name}（{rarity}）</div>", unsafe_allow_html=True)
