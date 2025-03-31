@@ -88,9 +88,13 @@ st.markdown("""
     color: gold;
     font-size: 14px;
 }
+/* ✅ 強制拉寬整個主區塊，讓三欄排版能生效 */
+main > div:has(.card-gallery) {
+    max-width: 1400px !important;
+    margin: 0 auto;
 </style>
 """, unsafe_allow_html=True)
-
+}
 # ✅ 卡片顯示 HTML 組裝
 html = "<div class='card-gallery'>"
 
