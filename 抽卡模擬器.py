@@ -203,7 +203,7 @@ def show_card_images_with_animation(card_df):
             audio_tag = f"var a=new Audio('{sound_data}');a.play();" if sound_data else ""
 
             html_cards += f"""
-            <div class="flip-card <div class="flip-card {rarity_class}" onclick="this.classList.add('flipped'); {audio_tag}">
+            <div class="flip-card {rarity_class}" onclick="this.classList.add('flipped'); {audio_tag}">
               <div class="flip-card-inner">
                 <div class="flip-card-front">
                   <img src="data:image/png;base64,{back_b64}" width="100%">
