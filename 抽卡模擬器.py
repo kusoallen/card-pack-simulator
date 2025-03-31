@@ -339,6 +339,8 @@ with st.expander("📥 匯出每位學生的合併抽卡紀錄 (ZIP)"):
                             st.warning(f"{f} 無法讀取，已略過：{e}")
                     if all_records:
                         combined = pd.concat(all_records, ignore_index=True)
+                        if "抽取時間" not in combined.columns:
+                            combined["抽取時間"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         excel_bytes = io.BytesIO()
                         combined.to_excel(excel_bytes, index=False)
                         excel_bytes.seek(0)
