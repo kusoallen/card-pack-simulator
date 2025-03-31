@@ -203,7 +203,7 @@ def show_card_images_with_animation(card_df):
             audio_tag = f"var a=new Audio('{sound_data}');a.play();" if sound_data else ""
 
             html_cards += f"""
-            <div class="flip-card {rarity_class}" onclick="this.classList.add('flipped'); {audio_tag}">
+            <div class="flip-card <div class="flip-card {rarity_class}" onclick="this.classList.add('flipped'); {audio_tag}">
               <div class="flip-card-inner">
                 <div class="flip-card-front">
                   <img src="data:image/png;base64,{back_b64}" width="100%">
@@ -214,7 +214,8 @@ def show_card_images_with_animation(card_df):
                 </div>
               </div>
             </div>
-            """
+    
+    """
 
         if (idx + 1) % 5 == 0:
             html_cards += "<div style='flex-basis: 100%; height: 10px;'></div>"
@@ -275,20 +276,26 @@ def show_card_images_with_animation(card_df):
     {html_cards}
     </div>
     """
-
-# 加入背景音樂但不顯示播放器
+        # 加入背景音樂但不顯示播放器
     bgm_path = "sounds/bgm.mp3"
     if os.path.exists(bgm_path):
         mime_type, _ = mimetypes.guess_type(bgm_path)
         with open(bgm_path, "rb") as f:
             bgm_b64 = base64.b64encode(f.read()).decode()
         final_html += f"""
-        <audio autoplay loop style='display:none'>
+        <audio id='bgm-audio' autoplay loop>
             <source src="data:{mime_type};base64,{bgm_b64}" type="{mime_type}">
         </audio>
         """
-    components.html(final_html, height=750, scrolling=True)
 
+        volume_slider = """
+    <div style='text-align:center; margin-bottom:10px;'>
+        <label for='volume'>🔊 背景音樂音量：</label>
+        <input type='range' id='volume' min='0' max='1' step='0.01' value='1' onchange="document.getElementById('bgm-audio').volume = this.value">
+    </div>
+    """
+    final_html = volume_slider + final_html
+    components.html(final_html, height=750, scrolling=True)
 
 # --- Streamlit 前端 ---# 封面 Logo
 LOGO_PATH = "logo.png"
