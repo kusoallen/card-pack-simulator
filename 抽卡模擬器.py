@@ -136,20 +136,12 @@ def show_card_images_with_animation(card_df):
     card_width = 200
     card_height = 290
     container_css = """
-    .card-container {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 20px;
-        justify-items: center;
-        padding: 20px;
-        max-width: 1100px;
-        margin: 0 auto;
-    }
+    
     """
     if len(card_df) == 1:
         card_style = "flex"
-        card_width = 520
-        card_height = 740
+        card_width = 260
+        card_height = 370
         container_css = """
         .card-container {
             display: flex;
@@ -214,6 +206,13 @@ def show_card_images_with_animation(card_df):
 
     final_html = f"""
     <style>
+    {container_css}
+    px;
+        height: {card_height}px;
+        perspective: 1000px;
+        position: relative;
+        transition: box-shadow 0.5s ease-in-out;
+    }}
     {container_css}
     .flip-card {{
         background-color: transparent;
@@ -292,6 +291,7 @@ def show_card_images_with_animation(card_df):
     </div>
     """
     components.html(final_html, height=750, scrolling=True)
+
 
 
 
