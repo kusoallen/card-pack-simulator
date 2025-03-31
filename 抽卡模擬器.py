@@ -254,7 +254,7 @@ def show_card_images_with_animation(card_df):
     </div>
     """
 
-    components.html(final_html, height=600 + (len(card_df) // 5) * 270, scrolling=True)
+     components.html(final_html, height=750, scrolling=False)
 
 # --- Streamlit 前端 ---# 封面 Logo
 LOGO_PATH = "logo.png"
