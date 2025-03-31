@@ -275,7 +275,7 @@ if st.button("🎲 抽卡！"):
         card_df = draw_five_cards()
 
     # 儲存抽卡紀錄
-    saved_file = save_draw_result(result)
+    saved_file = save_draw_result(card_df)
     st.info(f"抽卡紀錄已儲存至：{saved_file}")
 
     # 顯示卡圖
