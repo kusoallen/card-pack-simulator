@@ -185,6 +185,7 @@ def show_card_images_with_animation(card_df):
             scroll_to_bottom()
         time.sleep(0.2)
 
+def render_card_grid(html_cards):
     final_html = f"""
     <style>
     .card-container {{
@@ -253,8 +254,8 @@ def show_card_images_with_animation(card_df):
     {html_cards}
     </div>
     """
+    components.html(final_html, height=750, scrolling=False)
 
-     components.html(final_html, height=750, scrolling=False)
 
 # --- Streamlit 前端 ---# 封面 Logo
 LOGO_PATH = "logo.png"
