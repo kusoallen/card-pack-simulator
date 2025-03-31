@@ -280,7 +280,7 @@ if st.button("🎲 抽卡！"):
 
     # 顯示卡圖
     if animate:
-        show_card_images_with_animation(result)
+        show_card_images_with_animation(card_df)
     else:
         st.subheader("抽卡圖像展示")
         img_folder = "card_images"
