@@ -279,9 +279,6 @@ def show_card_images_with_animation(card_df):
     components.html(final_html, height=750, scrolling=True)
 
 # --- Streamlit 前端 ---# 封面 Logo
-LOGO_PATH = "logo.png"
-if os.path.exists(LOGO_PATH):
-    st.image(LOGO_PATH, use_container_width=True)
 
 st.title("優等卡牌 抽卡模擬器")
 
