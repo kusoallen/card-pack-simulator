@@ -20,6 +20,7 @@ if os.path.exists(BACKGROUND_IMAGE_PATH):
         </style>
         """
         st.markdown(page_bg, unsafe_allow_html=True)
+
 st.title("📚 查詢學生抽卡紀錄")
 
 query_id = st.text_input("請輸入要查詢的學號：", key="query")
