@@ -185,7 +185,6 @@ def show_card_images_with_animation(card_df):
             scroll_to_bottom()
         time.sleep(0.2)
 
-def render_card_grid(html_cards):
     final_html = f"""
     <style>
     .card-container {{
