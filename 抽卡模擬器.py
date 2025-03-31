@@ -275,6 +275,18 @@ def show_card_images_with_animation(card_df):
     {html_cards}
     </div>
     """
+
+# 加入背景音樂但不顯示播放器
+    bgm_path = "sounds/bgm.mp3"
+    if os.path.exists(bgm_path):
+        mime_type, _ = mimetypes.guess_type(bgm_path)
+        with open(bgm_path, "rb") as f:
+            bgm_b64 = base64.b64encode(f.read()).decode()
+        final_html += f"""
+        <audio autoplay loop style='display:none'>
+            <source src="data:{mime_type};base64,{bgm_b64}" type="{mime_type}">
+        </audio>
+        """
     components.html(final_html, height=750, scrolling=True)
 
 
