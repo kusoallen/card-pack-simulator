@@ -2,11 +2,13 @@ import streamlit as st
 import pandas as pd
 import os
 from PIL import Image
+from io import BytesIO
 import base64
 
 st.set_page_config(page_title="卡牌全圖鑑")
+
 # ✅ 背景圖片設定
-BACKGROUND_IMAGE_PATH = "background.png"  # 可改成 background.png 等
+BACKGROUND_IMAGE_PATH = "background.png"
 if os.path.exists(BACKGROUND_IMAGE_PATH):
     with open(BACKGROUND_IMAGE_PATH, "rb") as f:
         bg_bytes = f.read()
@@ -49,7 +51,7 @@ if rarity_choice != "全部":
     cards_df = cards_df[cards_df["稀有度"] == rarity_choice]
 cards_df = cards_df[cards_df["類型"].isin(type_choice)]
 
-# 顯示卡片區塊
+# ✅ 樣式設定（3 欄顯示）
 st.markdown("""
 <style>
 .card-gallery {
@@ -59,7 +61,6 @@ st.markdown("""
     justify-items: center;
     padding: 30px;
 }
-
 .card-block {
     text-align: center;
     background: rgba(255,255,255,0.08);
@@ -68,9 +69,10 @@ st.markdown("""
     box-shadow: 0 0 12px rgba(255,255,255,0.2);
     max-width: 320px;
     width: 100%;
-    height: 100%;
 }
-
+.card-block:hover {
+    transform: scale(1.03);
+}
 .card-block img {
     width: 100%;
     max-width: 100%;
@@ -80,7 +82,6 @@ st.markdown("""
     border-radius: 12px;
     box-shadow: 0 0 6px rgba(0,0,0,0.3);
 }
-
 .card-block .label {
     margin-top: 10px;
     font-weight: bold;
@@ -90,6 +91,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# ✅ 卡片顯示 HTML 組裝
 html = "<div class='card-gallery'>"
 
 for _, row in cards_df.iterrows():
@@ -103,8 +105,13 @@ for _, row in cards_df.iterrows():
             break
 
     if img_path:
-        with open(img_path, "rb") as f:
-            img_b64 = base64.b64encode(f.read()).decode()
+        # 縮圖 + 轉 base64
+        img = Image.open(img_path)
+        img.thumbnail((300, 420))
+        buffer = BytesIO()
+        img.save(buffer, format="PNG")
+        img_b64 = base64.b64encode(buffer.getvalue()).decode()
+
         html += f"""
         <div class='card-block'>
             <img src='data:image/png;base64,{img_b64}' alt='{name}'>
