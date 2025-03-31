@@ -54,26 +54,28 @@ st.markdown("""
 <style>
 .card-gallery {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 每列3張卡牌 */
-    gap: 30px;
+    grid-template-columns: repeat(3, 1fr); /* 三欄排版 */
+    gap: 24px;
     justify-items: center;
     padding-top: 30px;
 }
 .card-block {
     text-align: center;
     background: rgba(255,255,255,0.05);
-    padding: 16px;
+    padding: 12px;
     border-radius: 16px;
-    box-shadow: 0 0 10px rgba(255,255,255,0.25);
+    box-shadow: 0 0 10px rgba(255,255,255,0.2);
     transition: transform 0.3s ease;
+    width: 100%;        /* 撐滿欄位 */
+    max-width: 300px;   /* 限制每張卡片最大寬度 */
 }
 .card-block:hover {
-    transform: scale(1.05);
+    transform: scale(1.03);
 }
 .card-block img {
     border-radius: 12px;
     width: 100%;
-    max-height: 200px;
+    height: auto;
     object-fit: contain;
 }
 .card-block .label {
