@@ -54,30 +54,33 @@ st.markdown("""
 <style>
 .card-gallery {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 三欄排版 */
-    gap: 24px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
     justify-items: center;
-    padding-top: 30px;
+    padding: 30px;
 }
+
 .card-block {
     text-align: center;
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.08);
     padding: 12px;
     border-radius: 16px;
-    box-shadow: 0 0 10px rgba(255,255,255,0.2);
-    transition: transform 0.3s ease;
-    width: 50%;        /* 撐滿欄位 */
-    max-width: 100px;   /* 限制每張卡片最大寬度 */
+    box-shadow: 0 0 12px rgba(255,255,255,0.2);
+    max-width: 320px;
+    width: 100%;
+    height: 100%;
 }
-.card-block:hover {
-    transform: scale(1.03);
-}
+
 .card-block img {
-    border-radius: 12px;
-    width: 50%;
-    height: 50%;
+    width: 100%;
+    max-width: 100%;
+    max-height: 420px;
+    height: auto;
     object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 0 6px rgba(0,0,0,0.3);
 }
+
 .card-block .label {
     margin-top: 10px;
     font-weight: bold;
@@ -104,10 +107,10 @@ for _, row in cards_df.iterrows():
             img_b64 = base64.b64encode(f.read()).decode()
         html += f"""
         <div class='card-block'>
-            <img src='data:image/png;base64,{img_b64}'>
+            <img src='data:image/png;base64,{img_b64}' alt='{name}'>
             <div class='label'>{name}（{rarity}）</div>
         </div>
         """
 
 html += "</div>"
-st.components.v1.html(html, height=1500, scrolling=True)
+st.components.v1.html(html, height=1600, scrolling=True)
