@@ -132,42 +132,32 @@ def scroll_to_bottom():
     """, height=0)
 
 def show_card_images_with_animation(card_df):
-    card_width = 200
-    card_height = 290
-    container_css = """
-    
-    """
-    if len(card_df) == 1:
-        card_width = 260
-        card_height = 370
-        container_css = """
-        .card-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            padding: 30px;
-        }
-        """
-    card_style = "grid"
-    card_width = 200
-    card_height = 290
-    container_css = """
-    
-    """
-    if len(card_df) == 1:
-        card_style = "flex"
-        card_width = 260
-        card_height = 370
-        container_css = """
-        
-        """
     st.subheader("點擊卡片翻面展示")
     img_folder = "card_images"
     back_path = os.path.join(img_folder, "card_back.png")
     if not os.path.exists(back_path):
         st.warning("請提供統一卡背圖 card_back.png 放在 card_images 資料夾內")
         return
+
+    card_width = 200
+    card_height = 290
+    if len(card_df) == 1:
+        card_width = 260
+        card_height = 370
+
+    container_css = f"""
+    .card-container {{
+        {'display: flex; justify-content: center; align-items: center; height: 100%; padding: 30px;' if len(card_df) == 1 else 'display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; justify-items: center; padding: 20px; max-width: 1100px; margin: 0 auto;'}
+    }}
+    .flip-card {{
+        background-color: transparent;
+        width: {card_width}px;
+        height: {card_height}px;
+        perspective: 1000px;
+        position: relative;
+        transition: box-shadow 0.5s ease-in-out;
+    }}
+    """
 
     sound_played = False
     back_b64 = base64.b64encode(open(back_path, "rb").read()).decode()
@@ -218,54 +208,6 @@ def show_card_images_with_animation(card_df):
     final_html = f"""
     <style>
     {container_css}
-    px;
-        height: {card_height}px;
-        perspective: 1000px;
-        position: relative;
-        transition: box-shadow 0.5s ease-in-out;
-    }}
-    .card-container {{
-        {'display: flex; justify-content: center; align-items: center; height: 100%; padding: 30px;' if len(card_df) == 1 else 'display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; justify-items: center; padding: 20px; max-width: 1100px; margin: 0 auto;'}
-    }}
-    px;
-        height: {card_height}px;
-        perspective: 1000px;
-        position: relative;
-        transition: box-shadow 0.5s ease-in-out;
-    }}
-    {container_css}
-    px;
-        height: {card_height}px;
-        perspective: 1000px;
-        position: relative;
-        transition: box-shadow 0.5s ease-in-out;
-    }}
-    {container_css}
-    .flip-card {{
-        background-color: transparent;
-        width: {card_width}px;
-        height: {card_height}px;
-        perspective: 1000px;
-        position: relative;
-        transition: box-shadow 0.5s ease-in-out;
-    }}
-    .card-container {{
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 20px;
-        justify-items: center;
-        padding: 20px;
-        max-width: 1100px;
-        margin: 0 auto;
-    }}
-    .flip-card {{
-        background-color: transparent;
-        width: 200px;
-        height: 290px;
-        perspective: 1000px;
-        position: relative;
-        transition: box-shadow 0.5s ease-in-out;
-    }}
     .flip-card-inner {{
         position: relative;
         width: 100%;
