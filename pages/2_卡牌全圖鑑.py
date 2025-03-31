@@ -36,7 +36,7 @@ st.markdown("""
 <style>
 .card-gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 20px;
     justify-items: center;
     padding-top: 20px;
@@ -51,14 +51,14 @@ st.markdown("""
 .card-block img {
     border-radius: 12px;
     width: 100%;
-    max-height: 260px;
+    max-height: 200px;
     object-fit: contain;
 }
 .card-block .label {
     margin-top: 6px;
     font-weight: bold;
     color: gold;
-    font-size: 16px;
+    font-size: 14px;
 }
 </style>
 """, unsafe_allow_html=True)
