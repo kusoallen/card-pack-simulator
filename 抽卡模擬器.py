@@ -73,11 +73,13 @@ def simulate_draws(n_packs=10):
 
 # ✅ 加入學號欄位並儲存結果
 def save_draw_result(result_df, student_id):
+    taipei = pytz.timezone("Asia/Taipei")
+    now_tw = datetime.now(taipei).strftime("%Y-%m-%d %H:%M:%S")
     result_df.insert(0, "學號", student_id)
-    result_df["抽取時間"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    result_df["抽取時間"] = now_tw
     folder = "抽卡紀錄"
     os.makedirs(folder, exist_ok=True)
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(taipei).strftime("%Y%m%d_%H%M%S")
     filename = f"{folder}/抽卡紀錄_{student_id}_{timestamp}.xlsx"
     result_df.to_excel(filename, index=False)
     return filename
@@ -193,8 +195,8 @@ def show_card_images_with_animation(card_df):
     }}
     .flip-card {{
         background-color: transparent;
-        width: 150px;
-        height: 220px;
+        width: 240px;
+        height: 350px;
         perspective: 1000px;
         position: relative;
         transition: box-shadow 0.5s ease-in-out;
@@ -312,7 +314,10 @@ with st.expander("📚 查詢學生抽卡紀錄"):
             st.dataframe(combined)
         else:
             st.info("查無此學號的紀錄。")
+
 # 📦 一鍵打包下載：每位學號合併為一份 Excel
+import pytz  # 加入台灣時區
+
 with st.expander("📥 匯出每位學生的合併抽卡紀錄 (ZIP)"):
     folder = "抽卡紀錄"
     if os.path.exists(folder):
@@ -341,7 +346,9 @@ with st.expander("📥 匯出每位學生的合併抽卡紀錄 (ZIP)"):
                     if all_records:
                         combined = pd.concat(all_records, ignore_index=True)
                         if "抽取時間" not in combined.columns:
-                            combined["抽取時間"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                            taipei = pytz.timezone("Asia/Taipei")
+                            now_tw = datetime.now(taipei).strftime("%Y-%m-%d %H:%M:%S")
+                            combined["抽取時間"] = now_tw
                         excel_bytes = io.BytesIO()
                         combined.to_excel(excel_bytes, index=False)
                         excel_bytes.seek(0)
