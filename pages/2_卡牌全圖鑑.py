@@ -68,15 +68,15 @@ st.markdown("""
 }
 .card-block img {
     border-radius: 12px;
-    width: 100%;
-    max-height: 240px;
+    width: 90%;
+    max-height: 180px;
     object-fit: contain;
 }
 .card-block .label {
     margin-top: 6px;
     font-weight: bold;
     color: gold;
-    font-size: 14px;
+    font-size: 13px;
 }
 </style>
 """, unsafe_allow_html=True)
