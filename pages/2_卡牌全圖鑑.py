@@ -25,20 +25,15 @@ if os.path.exists(BACKGROUND_IMAGE_PATH):
 
 st.title("🃏 優等卡牌全圖鑑")
 
-# 載入卡牌資料
-cards_df = pd.read_excel("優等卡牌 的副本.xlsx", sheet_name="工作表4")
-card_folder = "card_images"
 
-# 過濾主卡（學生、知識、武器）
-cards_df = cards_df[cards_df["類型"].isin(["學生卡", "知識卡", "武器卡"])]
-cards_df = cards_df.sort_values(by=["稀有度", "名稱"])
 
 # 🔍 搜尋與篩選
 col1, col2 = st.columns([2, 1])
 with col1:
     search_name = st.text_input("🔍 搜尋卡名：")
 with col2:
-    rarity_filter = st.selectbox("🌟 篩選稀有度：", ["全部"] + sorted(cards_df["稀有度"].unique()))
+    unique_rarities = sorted([r for r in cards_df["稀有度"].dropna().unique() if isinstance(r, str)])
+    rarity_filter = st.selectbox("🌟 篩選稀有度：", ["全部"] + unique_rarities)
 
 # 套用搜尋與篩選
 if search_name:
