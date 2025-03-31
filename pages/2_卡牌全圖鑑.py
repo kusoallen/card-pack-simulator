@@ -54,34 +54,38 @@ st.markdown("""
 <style>
 .card-gallery {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(3, 1fr); /* 每列3張卡牌 */
+    gap: 30px;
     justify-items: center;
-    padding-top: 20px;
+    padding-top: 30px;
 }
 .card-block {
     text-align: center;
     background: rgba(255,255,255,0.05);
-    padding: 12px;
-    border-radius: 12px;
-    box-shadow: 0 0 8px rgba(255,255,255,0.2);
+    padding: 16px;
+    border-radius: 16px;
+    box-shadow: 0 0 10px rgba(255,255,255,0.25);
+    transition: transform 0.3s ease;
+}
+.card-block:hover {
+    transform: scale(1.05);
 }
 .card-block img {
     border-radius: 12px;
-    width: 90%;
-    max-height: 160px;
+    width: 100%;
+    max-height: 200px;
     object-fit: contain;
 }
 .card-block .label {
-    margin-top: 6px;
+    margin-top: 10px;
     font-weight: bold;
     color: gold;
-    font-size: 12px;
+    font-size: 14px;
 }
 </style>
 """, unsafe_allow_html=True)
 
-html = "<div class='card-gallery' style='display: flex; justify-content: center; align-items: center; height: 100%; padding: 30px;' if len(cards_df) == 1 else 'display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; justify-items: center; padding: 20px; max-width: 1100px; margin: 0 auto;'>"
+html = "<div class='card-gallery'>"
 
 for _, row in cards_df.iterrows():
     name = row["名稱"]
@@ -104,4 +108,4 @@ for _, row in cards_df.iterrows():
         """
 
 html += "</div>"
-st.components.v1.html(html, height=1200, scrolling=True)
+st.components.v1.html(html, height=1300, scrolling=True)
