@@ -67,7 +67,7 @@ st.markdown("""
     box-shadow: 0 0 10px rgba(255,255,255,0.2);
     transition: transform 0.3s ease;
     width: 100%;        /* 撐滿欄位 */
-    max-width: 300px;   /* 限制每張卡片最大寬度 */
+    max-width: 100px;   /* 限制每張卡片最大寬度 */
 }
 .card-block:hover {
     transform: scale(1.03);
