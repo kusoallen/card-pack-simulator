@@ -4,7 +4,7 @@ import os
 from PIL import Image
 import base64
 
-st.set_page_config(page_title="卡牌全圖鑑")
+st.set_page_config(page_title="卡牌全圖鑑", layout="wide")
 # ✅ 背景圖片設定
 BACKGROUND_IMAGE_PATH = "background.png"  # 可改成 background.png 等
 if os.path.exists(BACKGROUND_IMAGE_PATH):
