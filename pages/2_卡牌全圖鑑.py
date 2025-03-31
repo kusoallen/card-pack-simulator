@@ -36,7 +36,7 @@ st.markdown("""
 <style>
 .card-gallery {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 20px;
     justify-items: center;
     padding-top: 20px;
