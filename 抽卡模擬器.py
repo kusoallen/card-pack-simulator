@@ -293,7 +293,7 @@ for i, name in enumerate(hero_names):
             img_path = try_path
             break
     if img_path:
-        hero_cols[i].image(Image.open(img_path), use_column_width=True, caption=name)
+        hero_cols[i].image(Image.open(img_path), use_container_width=True, caption=name)
 
 
 show_background_music_player()
