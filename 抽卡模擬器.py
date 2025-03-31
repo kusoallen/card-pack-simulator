@@ -309,6 +309,3 @@ with st.expander("📚 查詢學生抽卡紀錄"):
             st.dataframe(combined)
         else:
             st.info("查無此學號的紀錄。")
-        else:
-            st.info("查無此學號的紀錄。")
-
