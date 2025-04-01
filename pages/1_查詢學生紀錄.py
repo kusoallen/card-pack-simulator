@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import base64
 import pytz
+import io
 
 st.set_page_config(page_title="查詢學生紀錄")
 # ✅ 背景圖片設定
