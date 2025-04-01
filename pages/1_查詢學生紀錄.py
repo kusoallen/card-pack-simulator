@@ -60,7 +60,7 @@ with st.expander("📥 匯出每位學生的合併抽卡紀錄 (ZIP)"):
 
     # ✅ 密碼驗證
     password = st.text_input("請輸入下載密碼", type="password")
-    correct_password = "teacher123"  # 你可以自行更換密碼
+    correct_password = "star8341"  # 你可以自行更換密碼
 
     if password == correct_password:
         folder = "抽卡紀錄"
