@@ -173,6 +173,21 @@ def write_to_google_sheet(result_df, student_id):
         ])
 
 
+# ✅ 捲動畫面到底部（動畫區使用）
+def scroll_to_bottom():
+    components.html("""
+        <div id='bottom-marker'></div>
+        <script>
+            setTimeout(function() {
+                var marker = document.getElementById("bottom-marker");
+                if (marker) {
+                    marker.scrollIntoView({ behavior: "smooth" });
+                }
+            }, 200);
+        </script>
+    """, height=0)
+
+
 def show_card_images_with_animation(card_df):
     st.subheader("點擊卡片翻面展示")
     import mimetypes
