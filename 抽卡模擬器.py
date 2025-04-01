@@ -43,6 +43,19 @@ if os.path.exists(BACKGROUND_IMAGE_PATH):
 cards_df = pd.read_excel("優等卡牌 的副本.xlsx", sheet_name="工作表4")
 cards_df = cards_df[cards_df["類型"].isin(["學生卡", "知識卡", "武器卡"])]
 
+# ✅ 檢查學生是否符合抽卡資格（根據 Google Sheet "進度表"）
+def check_student_eligibility(student_id):
+    try:
+        progress_ws = sheet.worksheet("進度表")  # 這裡請確認你的工作表名稱
+        records = progress_ws.get_all_records()
+        for row in records:
+            if str(row.get("學號")).strip() == str(student_id).strip():
+                return row.get("可抽卡") == "是"
+    except:
+        st.error("讀取進度表失敗，請確認工作表名稱與權限")
+    return False
+
+
 
 # 顯示背景音樂播放器（需使用者手動播放）
 def show_background_music_player():
@@ -400,6 +413,13 @@ if password != correct_password:
 
 # 🧑‍🎓 輸入學號
 student_id = st.text_input("請輸入學號：")
+
+# ✅ 檢查是否有資格抽卡
+if student_id and not check_student_eligibility(student_id):
+    st.error("❌ 尚未達成抽卡資格，請完成指定進度後再試！")
+    st.stop()
+
+
 
 # 🔄 模式選擇
 mode = st.radio("請選擇抽卡模式：", ["抽幾包卡（每包5張）", "單抽（1張卡）"])
