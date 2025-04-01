@@ -393,7 +393,7 @@ if student_id:
     if mode == "抽幾包卡（每包5張）":
         packs = st.number_input("請輸入要抽幾包卡（每包5張）", min_value=1, max_value=5, value=1)
         if st.button("開始抽卡！"):
-            result = simulate_draws(packs)
+            result = simulate_draws(student_id, packs)
             st.success(f"已抽出 {packs} 包，共 {len(result)} 張卡！")
             saved_file = save_draw_result(result, student_id)
             st.info(f"抽卡紀錄已儲存至：{saved_file}")
@@ -404,7 +404,7 @@ if student_id:
 
     else:
         if st.button("立即單抽！🎯"):
-            result = draw_single()
+            result = draw_single(student_id)
             st.success("你抽到了 1 張卡片！")
             saved_file = save_draw_result(result, student_id)
             st.info(f"抽卡紀錄已儲存至：{saved_file}")
