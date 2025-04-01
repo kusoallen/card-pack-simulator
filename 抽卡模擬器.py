@@ -101,6 +101,49 @@ def save_draw_result(result_df, student_id):
 
     return filename
 
+# ✅ 傳說保底抽卡邏輯
+def draw_card_with_pity(card_pool, student_id):
+    global student_draw_count
+    if student_id not in student_draw_count:
+        student_draw_count[student_id] = 0
+
+    # 計數
+    student_draw_count[student_id] += 1
+
+    # 檢查是否需要保底
+    if student_draw_count[student_id] % 50 == 0:
+        legendary_cards = [card for card in card_pool if card[1] == "傳說"]
+        chosen = random.choice(legendary_cards)
+    else:
+        pool = [card for card in card_pool for _ in range(card[2])]
+        chosen = random.choice(pool)
+
+    return chosen
+
+# ✅ 單抽封裝
+
+def draw_single_df(card_pool, student_id):
+    card = draw_card_with_pity(card_pool, student_id)
+    return pd.DataFrame([card], columns=["卡名", "稀有度", "_weight"]).drop(columns="_weight")
+
+# ✅ 五抽封裝
+
+def draw_pack_df(card_pool, student_id):
+    cards = [draw_card_with_pity(card_pool, student_id) for _ in range(5)]
+    return pd.DataFrame(cards, columns=["卡名", "稀有度", "_weight"]).drop(columns="_weight")
+
+# ✅ 多包抽卡封裝
+
+def simulate_draws_with_pity(n_packs, card_pool, student_id):
+    all_packs = []
+    for _ in range(n_packs):
+        pack = draw_pack_df(card_pool, student_id)
+        all_packs.append(pack)
+    return pd.concat(all_packs, ignore_index=True)
+
+
+
+
 # ✅ 寫入抽卡結果到專屬學生分頁
 
 def write_to_google_sheet(result_df, student_id):
