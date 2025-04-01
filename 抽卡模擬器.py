@@ -101,12 +101,21 @@ def save_draw_result(result_df, student_id):
 
     return filename
 
-# ✅ 同步寫入 Google Sheet
+# ✅ 寫入抽卡結果到專屬學生分頁
+
 def write_to_google_sheet(result_df, student_id):
-    from datetime import datetime
     taipei = pytz.timezone("Asia/Taipei")
     now = datetime.now(taipei).strftime("%Y-%m-%d %H:%M:%S")
+    sheet_titles = [ws.title for ws in sheet.worksheets()]
 
+    # 如果學生分頁不存在，先建立並加入標題列
+    if student_id not in sheet_titles:
+        worksheet = sheet.add_worksheet(title=student_id, rows=1000, cols=10)
+        worksheet.append_row(["學號", "卡名", "稀有度", "抽取時間"])
+    else:
+        worksheet = sheet.worksheet(student_id)
+
+    # 寫入每張卡紀錄
     for _, row in result_df.iterrows():
         worksheet.append_row([
             student_id,
@@ -114,6 +123,7 @@ def write_to_google_sheet(result_df, student_id):
             row["稀有度"],
             now
         ])
+
 
 
 # 顯示背景音樂播放器（需使用者手動播放）
