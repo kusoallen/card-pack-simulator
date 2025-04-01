@@ -57,49 +57,57 @@ if query_id:
 import pytz  # 加入台灣時區
 
 with st.expander("📥 匯出每位學生的合併抽卡紀錄 (ZIP)"):
-    folder = "抽卡紀錄"
-    if os.path.exists(folder):
-        files = [f for f in os.listdir(folder) if f.endswith(".xlsx") and f.startswith("抽卡紀錄_")]
-        student_groups = {}
 
-        # 分學號彙整檔案
-        for file in files:
-            parts = file.replace(".xlsx", "").split("_")
-            if len(parts) >= 3:
-                student_id = parts[1]
-                student_groups.setdefault(student_id, []).append(file)
+    # ✅ 密碼驗證
+    password = st.text_input("請輸入下載密碼", type="password")
+    correct_password = "teacher123"  # 你可以自行更換密碼
 
-        if student_groups:
-            zip_buffer = io.BytesIO()
-            with zipfile.ZipFile(zip_buffer, "w") as zipf:
-                for sid, file_list in student_groups.items():
-                    all_records = []
-                    for f in file_list:
-                        try:
-                            df = pd.read_excel(os.path.join(folder, f), sheet_name=0)
-                            if not df.empty:
-                                all_records.append(df)
-                        except Exception as e:
-                            st.warning(f"{f} 無法讀取，已略過：{e}")
-                    if all_records:
-                        combined = pd.concat(all_records, ignore_index=True)
-                        if "抽取時間" not in combined.columns:
-                            taipei = pytz.timezone("Asia/Taipei")
-                            now_tw = datetime.now(taipei).strftime("%Y-%m-%d %H:%M:%S")
-                            combined["抽取時間"] = now_tw
-                        excel_bytes = io.BytesIO()
-                        combined.to_excel(excel_bytes, index=False)
-                        excel_bytes.seek(0)
-                        zipf.writestr(f"{sid}.xlsx", excel_bytes.read())
+    if password == correct_password:
+        folder = "抽卡紀錄"
+        if os.path.exists(folder):
+            files = [f for f in os.listdir(folder) if f.endswith(".xlsx") and f.startswith("抽卡紀錄_")]
+            student_groups = {}
 
-            zip_buffer.seek(0)
-            st.download_button(
-                "📦 下載每位學生合併紀錄 (ZIP)",
-                data=zip_buffer,
-                file_name="所有學生抽卡紀錄.zip",
-                mime="application/zip"
-            )
+            # 分學號彙整檔案
+            for file in files:
+                parts = file.replace(".xlsx", "").split("_")
+                if len(parts) >= 3:
+                    student_id = parts[1]
+                    student_groups.setdefault(student_id, []).append(file)
+
+            if student_groups:
+                zip_buffer = io.BytesIO()
+                with zipfile.ZipFile(zip_buffer, "w") as zipf:
+                    for sid, file_list in student_groups.items():
+                        all_records = []
+                        for f in file_list:
+                            try:
+                                df = pd.read_excel(os.path.join(folder, f), sheet_name=0)
+                                if not df.empty:
+                                    all_records.append(df)
+                            except Exception as e:
+                                st.warning(f"{f} 無法讀取，已略過：{e}")
+                        if all_records:
+                            combined = pd.concat(all_records, ignore_index=True)
+                            if "抽取時間" not in combined.columns:
+                                taipei = pytz.timezone("Asia/Taipei")
+                                now_tw = datetime.now(taipei).strftime("%Y-%m-%d %H:%M:%S")
+                                combined["抽取時間"] = now_tw
+                            excel_bytes = io.BytesIO()
+                            combined.to_excel(excel_bytes, index=False)
+                            excel_bytes.seek(0)
+                            zipf.writestr(f"{sid}.xlsx", excel_bytes.read())
+
+                zip_buffer.seek(0)
+                st.download_button(
+                    "📦 下載每位學生合併紀錄 (ZIP)",
+                    data=zip_buffer,
+                    file_name="所有學生抽卡紀錄.zip",
+                    mime="application/zip"
+                )
+            else:
+                st.info("目前尚無任何 Excel 紀錄可下載。")
         else:
-            st.info("目前尚無任何 Excel 紀錄可下載。")
-    else:
-        st.info("尚未建立抽卡紀錄資料夾。請先執行一次抽卡。")
+            st.info("尚未建立抽卡紀錄資料夾。請先執行一次抽卡。")
+    elif password:  # 有輸入但不正確
+        st.error("❌ 密碼錯誤，請再試一次")
