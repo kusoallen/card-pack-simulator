@@ -412,7 +412,7 @@ if not st.session_state.authenticated:
     correct_password = "8341"
     if password == correct_password:
         st.session_state.authenticated = True
-        st.experimental_rerun()
+        st.rerun()
     else:
         st.warning("請輸入正確密碼以開始抽卡。")
         st.stop()
