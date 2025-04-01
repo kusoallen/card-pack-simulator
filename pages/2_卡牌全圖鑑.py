@@ -4,6 +4,7 @@ import os
 from PIL import Image
 from io import BytesIO
 import base64
+import zipfile
 
 st.set_page_config(page_title="卡牌全圖鑑")
 
