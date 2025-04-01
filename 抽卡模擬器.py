@@ -332,6 +332,15 @@ for i, name in enumerate(hero_names):
 
 show_background_music_player()
 
+# ✅ 密碼保護機制
+st.subheader("🔐 請先輸入密碼進入抽卡區")
+password = st.text_input("密碼：", type="password", key="card_draw_pwd")
+correct_password = "8341"  # <<<<< 自訂你的密碼
+
+if password != correct_password:
+    st.warning("請輸入正確密碼以開始抽卡。")
+    st.stop()  # ❌ 中斷畫面，不顯示後續抽卡功能
+
 # 🧑‍🎓 輸入學號
 student_id = st.text_input("請輸入學號：")
 
