@@ -55,6 +55,10 @@ def check_student_eligibility(student_id):
         st.error("讀取進度表失敗，請確認工作表名稱與權限")
     return False
 
+# 用來記錄密碼是否正確（Session State）
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+
 
 
 # 顯示背景音樂播放器（需使用者手動播放）
@@ -402,14 +406,16 @@ for i, name in enumerate(hero_names):
 
 show_background_music_player()
 
-# ✅ 密碼保護機制
-st.subheader("🔐 請先輸入密碼進入抽卡區")
-password = st.text_input("密碼：", type="password", key="card_draw_pwd")
-correct_password = "8341"  # <<<<< 自訂你的密碼
-
-if password != correct_password:
-    st.warning("請輸入正確密碼以開始抽卡。")
-    st.stop()  # ❌ 中斷畫面，不顯示後續抽卡功能
+if not st.session_state.authenticated:
+    st.subheader("🔐 請先輸入密碼進入抽卡區")
+    password = st.text_input("密碼：", type="password", key="card_draw_pwd")
+    correct_password = "8341"
+    if password == correct_password:
+        st.session_state.authenticated = True
+        st.experimental_rerun()
+    else:
+        st.warning("請輸入正確密碼以開始抽卡。")
+        st.stop()
 
 # 🧑‍🎓 輸入學號
 student_id = st.text_input("請輸入學號：")
