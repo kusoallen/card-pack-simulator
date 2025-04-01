@@ -83,7 +83,32 @@ def simulate_draws(n_packs=10):
         all_packs.append(pack)
     return pd.concat(all_packs, ignore_index=True)
 
-# ✅ 加入學號欄位並儲存結果
+# ✅ 寫入抽卡結果到專屬學生分頁（延遲連線）
+def write_to_google_sheet(result_df, student_id):
+    try:
+        SHEET_URL = "https://docs.google.com/spreadsheets/d/1pVfn1mgfsKMabM4QdxNjxQmvoEWANRzE6U7cCduFX0w/edit"
+        sheet = client.open_by_url(SHEET_URL)
+        sheet_titles = [ws.title for ws in sheet.worksheets()]
+        taipei = pytz.timezone("Asia/Taipei")
+        now = datetime.now(taipei).strftime("%Y-%m-%d %H:%M:%S")
+
+        if student_id not in sheet_titles:
+            worksheet = sheet.add_worksheet(title=student_id, rows=1000, cols=10)
+            worksheet.append_row(["學號", "卡名", "稀有度", "抽取時間"])
+        else:
+            worksheet = sheet.worksheet(student_id)
+
+        for _, row in result_df.iterrows():
+            worksheet.append_row([
+                student_id,
+                row["卡名"],
+                row["稀有度"],
+                now
+            ])
+    except Exception as e:
+        st.error(f"❌ 無法連線 Google Sheet，請確認授權與網址設定。\n錯誤：{e}")
+
+# ✅ 儲存抽卡紀錄至 Excel 並寫入 Google Sheet
 def save_draw_result(result_df, student_id):
     taipei = pytz.timezone("Asia/Taipei")
     now_tw = datetime.now(taipei).strftime("%Y-%m-%d %H:%M:%S")
@@ -96,76 +121,8 @@ def save_draw_result(result_df, student_id):
     filename = f"{folder}/抽卡紀錄_{student_id}_{timestamp}.xlsx"
     result_df.to_excel(filename, index=False)
 
-    # ✅ 同步到 Google Sheet
     write_to_google_sheet(result_df, student_id)
-
     return filename
-
-# ✅ 傳說保底抽卡邏輯
-def draw_card_with_pity(card_pool, student_id):
-    global student_draw_count
-    if student_id not in student_draw_count:
-        student_draw_count[student_id] = 0
-
-    # 計數
-    student_draw_count[student_id] += 1
-
-    # 檢查是否需要保底
-    if student_draw_count[student_id] % 50 == 0:
-        legendary_cards = [card for card in card_pool if card[1] == "傳說"]
-        chosen = random.choice(legendary_cards)
-    else:
-        pool = [card for card in card_pool for _ in range(card[2])]
-        chosen = random.choice(pool)
-
-    return chosen
-
-# ✅ 單抽封裝
-
-def draw_single_df(card_pool, student_id):
-    card = draw_card_with_pity(card_pool, student_id)
-    return pd.DataFrame([card], columns=["卡名", "稀有度", "_weight"]).drop(columns="_weight")
-
-# ✅ 五抽封裝
-
-def draw_pack_df(card_pool, student_id):
-    cards = [draw_card_with_pity(card_pool, student_id) for _ in range(5)]
-    return pd.DataFrame(cards, columns=["卡名", "稀有度", "_weight"]).drop(columns="_weight")
-
-# ✅ 多包抽卡封裝
-
-def simulate_draws_with_pity(n_packs, card_pool, student_id):
-    all_packs = []
-    for _ in range(n_packs):
-        pack = draw_pack_df(card_pool, student_id)
-        all_packs.append(pack)
-    return pd.concat(all_packs, ignore_index=True)
-
-
-
-
-# ✅ 寫入抽卡結果到專屬學生分頁
-
-def write_to_google_sheet(result_df, student_id):
-    taipei = pytz.timezone("Asia/Taipei")
-    now = datetime.now(taipei).strftime("%Y-%m-%d %H:%M:%S")
-    sheet_titles = [ws.title for ws in sheet.worksheets()]
-
-    # 如果學生分頁不存在，先建立並加入標題列
-    if student_id not in sheet_titles:
-        worksheet = sheet.add_worksheet(title=student_id, rows=1000, cols=10)
-        worksheet.append_row(["學號", "卡名", "稀有度", "抽取時間"])
-    else:
-        worksheet = sheet.worksheet(student_id)
-
-    # 寫入每張卡紀錄
-    for _, row in result_df.iterrows():
-        worksheet.append_row([
-            student_id,
-            row["卡名"],
-            row["稀有度"],
-            now
-        ])
 
 
 
