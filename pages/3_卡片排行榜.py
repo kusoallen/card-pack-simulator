@@ -75,8 +75,44 @@ if st.button("載入排行榜"):
         summary_df = pd.DataFrame(summary)
         summary_df = summary_df.sort_values(by=["傳說卡數", "總抽卡數"], ascending=False).reset_index(drop=True)
 
-        # 加上名次徽章圖示
+        # 名次箭頭比較資料來源：昨日名次
+        try:
+            rank_ws = sheet.worksheet("排行榜記錄")
+        except:
+            rank_ws = sheet.add_worksheet(title="排行榜記錄", rows=1000, cols=10)
+            rank_ws.append_row(["日期", "學號", "名次"])
+
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        yesterday_str = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+        past_records = rank_ws.get_all_records()
+        yesterday_ranks = {
+            r["學號"]: int(r["名次"]) for r in past_records if r["日期"] == yesterday_str
+        }
+
+        # 插入名次與箭頭
         badges = ["🥇", "🥈", "🥉"]
+        rank_col = []
+        for i, row in summary_df.iterrows():
+            curr_rank = i + 1
+            student_id = row["學號"]
+            prev_rank = yesterday_ranks.get(student_id, curr_rank)
+            if prev_rank > curr_rank:
+                arrow = " 🔺"
+            elif prev_rank < curr_rank:
+                arrow = " 🔻"
+            else:
+                arrow = " ⏺"
+            badge = badges[i] if i < 3 else str(curr_rank)
+            rank_col.append(badge + arrow)
+
+            # ✅ 自動寫入今日名次紀錄（避免重複）
+            already_logged = any(
+                r["日期"] == today_str and r["學號"] == student_id for r in past_records
+            )
+            if not already_logged:
+                rank_ws.append_row([today_str, student_id, curr_rank])
+
+        summary_df.insert(0, "名次", rank_col)
         summary_df.insert(0, "名次", [badges[i] if i < 3 else f"{i+1}" for i in range(len(summary_df))])
         # 使用樣式讓前三名整列變色
         def highlight_top_rows(row):
@@ -93,5 +129,4 @@ if st.button("載入排行榜"):
         st.dataframe(styled_df, use_container_width=True)
     else:
         st.info("目前沒有任何抽卡紀錄。")
-
 
