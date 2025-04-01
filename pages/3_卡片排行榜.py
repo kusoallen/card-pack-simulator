@@ -49,6 +49,11 @@ if st.button("載入排行榜"):
     if summary:
         summary_df = pd.DataFrame(summary)
         summary_df = summary_df.sort_values(by=["傳說卡數", "總抽卡數"], ascending=False).reset_index(drop=True)
+
+        # 加上名次徽章圖示
+        badges = ["🥇", "🥈", "🥉"]
+        summary_df.insert(0, "名次", [badges[i] if i < 3 else f"{i+1}" for i in range(len(summary_df))])
         st.dataframe(summary_df)
     else:
         st.info("目前沒有任何抽卡紀錄。")
+
