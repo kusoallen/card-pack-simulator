@@ -113,7 +113,7 @@ if st.button("載入排行榜"):
                 rank_ws.append_row([today_str, student_id, curr_rank])
 
         summary_df.insert(0, "名次", rank_col)
-        summary_df.insert(0, "名次", [badges[i] if i < 3 else f"{i+1}" for i in range(len(summary_df))])
+        
         # 使用樣式讓前三名整列變色
         def highlight_top_rows(row):
             if row.name == 0:
