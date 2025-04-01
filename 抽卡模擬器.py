@@ -365,24 +365,6 @@ else:
     st.warning("請先輸入學號才能進行抽卡。")
 
 
-# 📖 顯示某學生所有抽卡紀錄
-with st.expander("📚 查詢學生抽卡紀錄"):
-    query_id = st.text_input("請輸入要查詢的學號：", key="query")
-    if query_id:
-        folder = "抽卡紀錄"
-        matched_files = []
-        if os.path.exists(folder):
-            matched_files = [f for f in os.listdir(folder) if f.startswith(f"抽卡紀錄_{query_id}_") and f.endswith(".xlsx")]
-        if matched_files:
-            all_records = []
-            for file in matched_files:
-                df = pd.read_excel(os.path.join(folder, file))
-                all_records.append(df)
-            combined = pd.concat(all_records, ignore_index=True)
-            st.dataframe(combined)
-        else:
-            st.info("查無此學號的紀錄。")
-
 # 📦 一鍵打包下載：每位學號合併為一份 Excel
 import pytz  # 加入台灣時區
 
