@@ -57,10 +57,12 @@ def get_student_drawn_counts(student_id):
         counts[key] = counts.get(key, 0) + 1
     return counts
 
-# 🧮 建立符合該學生限制的卡池
+# 🧮 建立符合該學生限制 + 稀有度權重的卡池
 def build_limited_card_pool(student_id):
     drawn_counts = get_student_drawn_counts(student_id)
     max_allowed = {"普通": 2, "稀有": 2, "史詩": 2, "傳說": 1}
+    rarity_weights = {"普通": 75, "稀有": 20, "史詩": 4, "傳說": 1}
+
     limited_pool = []
     for _, row in cards_df.iterrows():
         name = row["名稱"]
@@ -68,9 +70,11 @@ def build_limited_card_pool(student_id):
         key = (name, rarity)
         current_count = drawn_counts.get(key, 0)
         remaining = max(0, max_allowed.get(rarity, 0) - current_count)
-        for _ in range(remaining):
+        weight = rarity_weights.get(rarity, 0)
+        for _ in range(remaining * weight):
             limited_pool.append((name, rarity))
     return limited_pool
+
 
 # 🎴 抽卡邏輯（含限制）
 def draw_single(student_id):
@@ -131,53 +135,245 @@ def write_to_google_sheet(result_df, student_id):
             now
         ])
 
+
+def show_card_images_with_animation(card_df):
+    st.subheader("點擊卡片翻面展示")
+    import mimetypes
+    img_folder = "card_images"
+    back_path = os.path.join(img_folder, "card_back.png")
+    if not os.path.exists(back_path):
+        st.warning("請提供統一卡背圖 card_back.png 放在 card_images 資料夾內")
+        return
+
+    # Base64 讀入音效
+    def encode_audio(file_path):
+        if not os.path.exists(file_path):
+            return ""
+        mime_type, _ = mimetypes.guess_type(file_path)
+        with open(file_path, "rb") as f:
+            return f"data:{mime_type};base64," + base64.b64encode(f.read()).decode()
+
+    sfx_legendary = encode_audio("sounds/legendary.mp3")
+    sfx_epic = encode_audio("sounds/epic.mp3")
+    sfx_rare = encode_audio("sounds/rare.mp3")
+
+    card_width = 200
+    card_height = 290
+    if len(card_df) == 1:
+        card_width = 260
+        card_height = 370
+
+    container_css = f"""
+    .card-container {{
+        {'display: flex; justify-content: center; align-items: center; height: 100%; padding: 30px;' if len(card_df) == 1 else 'display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; justify-items: center; padding: 20px; max-width: 1100px; margin: 0 auto;'}
+    }}
+    .flip-card {{
+        background-color: transparent;
+        width: {card_width}px;
+        height: {card_height}px;
+        perspective: 1000px;
+        position: relative;
+        transition: box-shadow 0.5s ease-in-out;
+    }}
+    """
+
+    back_b64 = base64.b64encode(open(back_path, "rb").read()).decode()
+    html_cards = ""
+
+    for idx, row in card_df.iterrows():
+        name = row["卡名"]
+        rarity = row["稀有度"]
+        img_path = None
+        for ext in [".png", ".jpg", ".jpeg", ".webp"]:
+            try_path = os.path.join(img_folder, f"{name}{ext}")
+            if os.path.exists(try_path):
+                img_path = try_path
+                break
+
+        if img_path:
+            front_b64 = base64.b64encode(open(img_path, "rb").read()).decode()
+            rarity_class = ""
+            if rarity == "稀有":
+                rarity_class = "hover-glow-white"
+                sound_data = sfx_rare
+            elif rarity == "史詩":
+                rarity_class = "hover-glow-purple"
+                sound_data = sfx_epic
+            elif rarity == "傳說":
+                rarity_class = "hover-glow-gold"
+                sound_data = sfx_legendary
+            else:
+                sound_data = ""
+
+            audio_tag = f"var a=new Audio('{sound_data}');a.play();" if sound_data else ""
+
+            html_cards += f"""
+            <div class="flip-card {rarity_class}" onclick="this.classList.add('flipped'); {audio_tag}">
+              <div class="flip-card-inner">
+                <div class="flip-card-front">
+                  <img src="data:image/png;base64,{back_b64}" width="100%">
+                </div>
+                <div class="flip-card-back">
+                  <img src="data:image/png;base64,{front_b64}" width="100%">
+                  <p style='text-align:center;font-weight:bold;color:gold;margin:0;'>{name} ({rarity})</p>
+                </div>
+              </div>
+            </div>
+    
+    """
+
+        if (idx + 1) % 5 == 0:
+            html_cards += "<div style='flex-basis: 100%; height: 10px;'></div>"
+            scroll_to_bottom()
+        time.sleep(0.2)
+
+    final_html = f"""
+    <style>
+    {container_css}
+    .flip-card-inner {{
+        position: relative;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        transition: transform 0.8s;
+        transform-style: preserve-3d;
+    }}
+    .flipped .flip-card-inner {{
+        transform: rotateY(180deg);
+    }}
+    .flip-card-front, .flip-card-back {{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }}
+    .flip-card-back {{
+        transform: rotateY(180deg);
+    }}
+    .hover-glow-white:hover {{
+        box-shadow: 0 0 20px 5px white !important;
+        animation: glow-white 1.5s infinite alternate;
+    }}
+    .hover-glow-purple:hover {{
+        box-shadow: 0 0 20px 5px purple !important;
+        animation: glow-purple 1.5s infinite alternate;
+    }}
+    .hover-glow-gold:hover {{
+        box-shadow: 0 0 20px 5px gold !important;
+        animation: glow-gold 1.5s infinite alternate;
+    }}
+    @keyframes glow-white {{
+        from {{ box-shadow: 0 0 5px white; }}
+        to {{ box-shadow: 0 0 25px white; }}
+    }}
+    @keyframes glow-purple {{
+        from {{ box-shadow: 0 0 5px purple; }}
+        to {{ box-shadow: 0 0 25px violet; }}
+    }}
+    @keyframes glow-gold {{
+        from {{ box-shadow: 0 0 5px gold; }}
+        to {{ box-shadow: 0 0 25px orange; }}
+    }}
+    </style>
+    <div class="card-container">
+    {html_cards}
+    </div>
+    """
+    components.html(final_html, height=750, scrolling=True)
+
 # --- Streamlit 前端 ---
+
 st.title("優等卡牌 抽卡模擬器")
+# 顯示 4 張英雄卡封面（含 hover 特效）
+st.markdown("""
+<style>
+.hero-card-container {
+    position: relative;
+    text-align: center;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+    border-radius: 12px;
+}
+.hero-card-container:hover {
+    transform: scale(1.07);
+    box-shadow: 0 0 20px gold;
+}
+.hero-hover {
+    width: 100%;
+    border-radius: 12px;
+}
+.hero-caption {
+    font-weight: bold;
+    margin-top: 5px;
+    color: #f0e68c;
+    font-size: 18px;
+}
+</style>
+""", unsafe_allow_html=True)
+hero_folder = "card_images"
+hero_names = ["Annie老師", "紀老師", "黃老師", "Allen老師"]
+hero_cols = st.columns(4)
+for i, name in enumerate(hero_names):
+    img_path = None
+    for ext in [".png", ".jpg", ".jpeg", ".webp"]:
+        try_path = os.path.join(hero_folder, f"{name}{ext}")
+        if os.path.exists(try_path):
+            img_path = try_path
+            break
 
-# 背景音樂播放器
-music_path = "sounds/bgm.mp3"
-if os.path.exists(music_path):
-    with open(music_path, "rb") as f:
-        data = f.read()
-        b64 = base64.b64encode(data).decode()
-        st.markdown(
-            f"""
-            <p>🎵 背景音樂：</p>
-            <audio controls loop>
-                <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
-            </audio>
-            """,
-            unsafe_allow_html=True
-        )
+    if img_path:
+        with open(img_path, "rb") as f:
+            img_b64 = base64.b64encode(f.read()).decode()
+        hero_cols[i].markdown(f"""
+        <div class='hero-card-container'>
+            <img src='data:image/png;base64,{img_b64}' class='hero-hover'>
+            <div class='hero-caption'>{name}</div>
+        </div>
+        """, unsafe_allow_html=True)
+       
 
-# 密碼保護
+
+
+show_background_music_player()
+
+# ✅ 密碼保護機制
 st.subheader("🔐 請先輸入密碼進入抽卡區")
 password = st.text_input("密碼：", type="password", key="card_draw_pwd")
-correct_password = "8341"
+correct_password = "8341"  # <<<<< 自訂你的密碼
+
 if password != correct_password:
     st.warning("請輸入正確密碼以開始抽卡。")
-    st.stop()
+    st.stop()  # ❌ 中斷畫面，不顯示後續抽卡功能
 
-# 學號輸入
+# 🧑‍🎓 輸入學號
 student_id = st.text_input("請輸入學號：")
+
+# 🔄 模式選擇
 mode = st.radio("請選擇抽卡模式：", ["抽幾包卡（每包5張）", "單抽（1張卡）"])
 animate = st.checkbox("啟用開包動畫模式", value=True)
-
 if student_id:
     if mode == "抽幾包卡（每包5張）":
         packs = st.number_input("請輸入要抽幾包卡（每包5張）", min_value=1, max_value=5, value=1)
         if st.button("開始抽卡！"):
-            result = simulate_draws(student_id, packs)
+            result = simulate_draws(packs)
             st.success(f"已抽出 {packs} 包，共 {len(result)} 張卡！")
             saved_file = save_draw_result(result, student_id)
             st.info(f"抽卡紀錄已儲存至：{saved_file}")
-            st.dataframe(result)
+            if animate:
+                show_card_images_with_animation(result)
+            else:
+                st.dataframe(result)
+
     else:
         if st.button("立即單抽！🎯"):
-            result = draw_single(student_id)
+            result = draw_single()
             st.success("你抽到了 1 張卡片！")
             saved_file = save_draw_result(result, student_id)
             st.info(f"抽卡紀錄已儲存至：{saved_file}")
-            st.dataframe(result)
+            if animate:
+                show_card_images_with_animation(result)
+            else:
+                st.dataframe(result)
 else:
     st.warning("請先輸入學號才能進行抽卡。")
