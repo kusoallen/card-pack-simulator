@@ -83,32 +83,7 @@ def simulate_draws(n_packs=10):
         all_packs.append(pack)
     return pd.concat(all_packs, ignore_index=True)
 
-# ✅ 寫入抽卡結果到專屬學生分頁（延遲連線）
-def write_to_google_sheet(result_df, student_id):
-    try:
-        SHEET_URL = "https://docs.google.com/spreadsheets/d/1pVfn1mgfsKMabM4QdxNjxQmvoEWANRzE6U7cCduFX0w/edit"
-        sheet = client.open_by_url(SHEET_URL)
-        sheet_titles = [ws.title for ws in sheet.worksheets()]
-        taipei = pytz.timezone("Asia/Taipei")
-        now = datetime.now(taipei).strftime("%Y-%m-%d %H:%M:%S")
-
-        if student_id not in sheet_titles:
-            worksheet = sheet.add_worksheet(title=student_id, rows=1000, cols=10)
-            worksheet.append_row(["學號", "卡名", "稀有度", "抽取時間"])
-        else:
-            worksheet = sheet.worksheet(student_id)
-
-        for _, row in result_df.iterrows():
-            worksheet.append_row([
-                student_id,
-                row["卡名"],
-                row["稀有度"],
-                now
-            ])
-    except Exception as e:
-        st.error(f"❌ 無法連線 Google Sheet，請確認授權與網址設定。\n錯誤：{e}")
-
-# ✅ 儲存抽卡紀錄至 Excel 並寫入 Google Sheet
+# ✅ 加入學號欄位並儲存結果
 def save_draw_result(result_df, student_id):
     taipei = pytz.timezone("Asia/Taipei")
     now_tw = datetime.now(taipei).strftime("%Y-%m-%d %H:%M:%S")
@@ -121,8 +96,33 @@ def save_draw_result(result_df, student_id):
     filename = f"{folder}/抽卡紀錄_{student_id}_{timestamp}.xlsx"
     result_df.to_excel(filename, index=False)
 
+    # ✅ 同步到 Google Sheet
     write_to_google_sheet(result_df, student_id)
+
     return filename
+
+# ✅ 寫入抽卡結果到專屬學生分頁
+
+def write_to_google_sheet(result_df, student_id):
+    taipei = pytz.timezone("Asia/Taipei")
+    now = datetime.now(taipei).strftime("%Y-%m-%d %H:%M:%S")
+    sheet_titles = [ws.title for ws in sheet.worksheets()]
+
+    # 如果學生分頁不存在，先建立並加入標題列
+    if student_id not in sheet_titles:
+        worksheet = sheet.add_worksheet(title=student_id, rows=1000, cols=10)
+        worksheet.append_row(["學號", "卡名", "稀有度", "抽取時間"])
+    else:
+        worksheet = sheet.worksheet(student_id)
+
+    # 寫入每張卡紀錄
+    for _, row in result_df.iterrows():
+        worksheet.append_row([
+            student_id,
+            row["卡名"],
+            row["稀有度"],
+            now
+        ])
 
 
 
