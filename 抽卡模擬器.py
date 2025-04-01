@@ -12,6 +12,8 @@ import zipfile
 import io
 import pytz
 
+import sqlite3
+
 st.set_page_config(page_title="優等卡牌 抽卡模擬器", layout="wide")
 
 # ✅ 背景圖片設定
@@ -52,24 +54,79 @@ for _, row in cards_df.iterrows():
     weight = rarity_weights.get(row["稀有度"], 0)
     card_pool.append((row["名稱"], row["稀有度"], weight))
 
-# 抽卡函數
-def draw_single():
-    pool = [card for card in card_pool for _ in range(card[2])]
-    drawn = random.sample(pool, 1)
-    return pd.DataFrame(drawn, columns=["卡名", "稀有度", "_weight"]).drop(columns="_weight")
+DB_PATH = "draw_card.db"
 
-def draw_pack():
-    pool = [card for card in card_pool for _ in range(card[2])]
-    drawn = random.sample(pool, 5)
-    return pd.DataFrame(drawn, columns=["卡名", "稀有度", "_weight"]).drop(columns="_weight")
+# 初始化學生狀態（若第一次抽卡）
+def init_student_status(student_id):
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("""
+        INSERT OR IGNORE INTO student_status (student_id, total_draws, no_legendary_count)
+        VALUES (?, 0, 0)
+    """, (student_id,))
+    conn.commit()
+    conn.close()
 
-# 模擬多包抽卡
-def simulate_draws(n_packs=10):
-    all_packs = []
-    for _ in range(n_packs):
-        pack = draw_pack()
-        all_packs.append(pack)
-    return pd.concat(all_packs, ignore_index=True)
+# 取得學生抽過的卡名與數量（dict: 卡名 -> 次數）
+def get_student_card_counts(student_id):
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT card_name, COUNT(*) FROM draw_records WHERE student_id = ? GROUP BY card_name", (student_id,))
+    result = dict(c.fetchall())
+    conn.close()
+    return result
+
+# 取得保底狀態
+
+def get_status(student_id):
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT total_draws, no_legendary_count FROM student_status WHERE student_id = ?", (student_id,))
+    result = c.fetchone()
+    conn.close()
+    return result if result else (0, 0)
+
+# 更新狀態與紀錄抽卡結果
+def update_status(student_id, card_name, rarity):
+    total, no_legend = get_status(student_id)
+    total += 1
+    no_legend = 0 if rarity == "傳說" else no_legend + 1
+
+    now = datetime.now(pytz.timezone("Asia/Taipei")).strftime("%Y-%m-%d %H:%M:%S")
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("INSERT INTO draw_records (student_id, card_name, rarity, draw_time) VALUES (?, ?, ?, ?)",
+              (student_id, card_name, rarity, now))
+    c.execute("UPDATE student_status SET total_draws = ?, no_legendary_count = ? WHERE student_id = ?",
+              (total, no_legend, student_id))
+    conn.commit()
+    conn.close()
+
+# 主抽卡函數（會過濾卡池並套用保底）
+def draw_card(student_id, full_card_pool):
+    init_student_status(student_id)
+    card_counts = get_student_card_counts(student_id)
+    total, no_legend = get_status(student_id)
+
+    # 過濾超過2張的普通/稀有/史詩卡
+    filtered_pool = []
+    for name, rarity, weight in full_card_pool:
+        count = card_counts.get(name, 0)
+        if rarity in ["普通", "稀有", "史詩"] and count >= 2:
+            continue
+        filtered_pool.append((name, rarity, weight))
+
+    # 50張保底傳說
+    if no_legend >= 49:
+        legend_pool = [(n, r, w) for n, r, w in filtered_pool if r == "傳說"]
+        chosen = random.choices(legend_pool or filtered_pool, weights=[c[2] for c in (legend_pool or filtered_pool)])[0]
+    else:
+        chosen = random.choices(filtered_pool, weights=[c[2] for c in filtered_pool])[0]
+
+    name, rarity, _ = chosen
+    update_status(student_id, name, rarity)
+
+    return pd.DataFrame([[name, rarity]], columns=["卡名", "稀有度"])
 
 # ✅ 加入學號欄位並儲存結果
 def save_draw_result(result_df, student_id):
@@ -351,21 +408,17 @@ if student_id:
     if mode == "抽幾包卡（每包5張）":
         packs = st.number_input("請輸入要抽幾包卡（每包5張）", min_value=1, max_value=5, value=1)
         if st.button("開始抽卡！"):
-            result = simulate_draws(packs)
+            all_cards = [draw_card(student_id, card_pool) for _ in range(packs * 5)]
+            result = pd.concat(all_cards, ignore_index=True)
             st.success(f"已抽出 {packs} 包，共 {len(result)} 張卡！")
-            saved_file = save_draw_result(result, student_id)
-            st.info(f"抽卡紀錄已儲存至：{saved_file}")
             if animate:
                 show_card_images_with_animation(result)
             else:
                 st.dataframe(result)
-
     else:
         if st.button("立即單抽！🎯"):
-            result = draw_single()
+            result = draw_card(student_id, card_pool)
             st.success("你抽到了 1 張卡片！")
-            saved_file = save_draw_result(result, student_id)
-            st.info(f"抽卡紀錄已儲存至：{saved_file}")
             if animate:
                 show_card_images_with_animation(result)
             else:
