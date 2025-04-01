@@ -24,11 +24,26 @@ if st.button("載入排行榜"):
         records = ws.get_all_records()
         df = pd.DataFrame(records)
         total_cards = len(df)
-        legend_count = df[df["稀有度"] == "傳說"].shape[0]
+        if "稀有度" in df.columns:
+            legend_count = df[df["稀有度"] == "傳說"].shape[0]
+        else:
+            legend_count = 0
+        if "稀有度" in df.columns:
+            epic_count = df[df["稀有度"] == "史詩"].shape[0]
+            rare_count = df[df["稀有度"] == "稀有"].shape[0]
+            normal_count = df[df["稀有度"] == "普通"].shape[0]
+            unique_cards = df["卡名"].nunique() if "卡名" in df.columns else 0
+        else:
+            epic_count = rare_count = normal_count = unique_cards = 0
+
         summary.append({
             "學號": ws.title,
             "總抽卡數": total_cards,
-            "傳說卡數": legend_count
+            "卡片種類數": unique_cards,
+            "傳說卡數": legend_count,
+            "史詩卡數": epic_count,
+            "稀有卡數": rare_count,
+            "普通卡數": normal_count
         })
 
     if summary:
