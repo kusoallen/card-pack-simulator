@@ -11,6 +11,18 @@ import base64
 import zipfile
 import io
 import pytz
+import gspread
+from google.oauth2.service_account import Credentials
+
+SCOPE = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+creds = Credentials.from_service_account_info(st.secrets["gspread_json"], scopes=SCOPE)
+client = gspread.authorize(creds)
+
+# 這裡請改成你實際使用的 Google Sheet 連結
+SHEET_URL = "https://docs.google.com/spreadsheets/d/1-uKCq-8w_c3EUItPKV9NnEVkRAQiC5I5vW2BZr8NFfg/edit"
+sheet = client.open_by_url(SHEET_URL)
+worksheet = sheet.sheet1
+
 
 st.set_page_config(page_title="優等卡牌 抽卡模擬器", layout="wide")
 
@@ -77,12 +89,32 @@ def save_draw_result(result_df, student_id):
     now_tw = datetime.now(taipei).strftime("%Y-%m-%d %H:%M:%S")
     result_df.insert(0, "學號", student_id)
     result_df["抽取時間"] = now_tw
+
     folder = "抽卡紀錄"
     os.makedirs(folder, exist_ok=True)
     timestamp = datetime.now(taipei).strftime("%Y%m%d_%H%M%S")
     filename = f"{folder}/抽卡紀錄_{student_id}_{timestamp}.xlsx"
     result_df.to_excel(filename, index=False)
+
+    # ✅ 同步到 Google Sheet
+    write_to_google_sheet(result_df, student_id)
+
     return filename
+
+# ✅ 同步寫入 Google Sheet
+def write_to_google_sheet(result_df, student_id):
+    from datetime import datetime
+    taipei = pytz.timezone("Asia/Taipei")
+    now = datetime.now(taipei).strftime("%Y-%m-%d %H:%M:%S")
+
+    for _, row in result_df.iterrows():
+        worksheet.append_row([
+            student_id,
+            row["卡名"],
+            row["稀有度"],
+            now
+        ])
+
 
 # 顯示背景音樂播放器（需使用者手動播放）
 def show_background_music_player():
