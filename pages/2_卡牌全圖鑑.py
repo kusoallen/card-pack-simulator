@@ -47,52 +47,50 @@ with st.sidebar:
     st.divider()
     st.subheader("📊 進階搜尋")
 
-# KN 篩選
     min_kn = st.number_input("KN 最小值", min_value=0, value=0)
     max_kn = st.number_input("KN 最大值", min_value=0, value=10)
 
-# KN 排序
     kn_sort = st.selectbox("KN 排序方式", ["無排序", "由小到大", "由大到小"])
 
-# 科目篩選與排序
     subjects = sorted(cards_df["科目"].dropna().unique())
     subject_choice = st.multiselect("科目篩選", options=subjects, default=subjects)
-    subject_sort = st.selectbox("科目排序方式", ["不排序", "A → Z", "Z → A"]) 
+    subject_sort = st.selectbox("科目排序方式", ["不排序", "A → Z", "Z → A"])
 
-# 根據篩選條件過濾卡牌
+# 篩選與排序
+filter_changed = False
+
 if name_query:
     cards_df = cards_df[cards_df["名稱"].str.contains(name_query, case=False, na=False)]
+    filter_changed = True
 if rarity_choice != "全部":
     cards_df = cards_df[cards_df["稀有度"] == rarity_choice]
-cards_df = cards_df[cards_df["類型"].isin(type_choice)]
-# KN 篩選
-cards_df = cards_df[(cards_df["KN"] >= min_kn) & (cards_df["KN"] <= max_kn)]
+    filter_changed = True
 
-# 科目篩選
+cards_df = cards_df[cards_df["類型"].isin(type_choice)]
+cards_df = cards_df[(cards_df["KN"] >= min_kn) & (cards_df["KN"] <= max_kn)]
 cards_df = cards_df[cards_df["科目"].isin(subject_choice)]
 
-# KN 排序
 if kn_sort == "由小到大":
     cards_df = cards_df.sort_values(by="KN", ascending=True)
 elif kn_sort == "由大到小":
     cards_df = cards_df.sort_values(by="KN", ascending=False)
 
-# 科目排序
 if subject_sort == "A → Z":
     cards_df = cards_df.sort_values(by="科目", ascending=True)
 elif subject_sort == "Z → A":
     cards_df = cards_df.sort_values(by="科目", ascending=False)
 
-# ✅ 初始化頁碼狀態
 if "page" not in st.session_state:
     st.session_state.page = 1
+if filter_changed:
+    st.session_state.page = 1
 
-# 分頁參數設定
+# 分頁設定
 cards_per_page = 9
 total_cards = len(cards_df)
 total_pages = (total_cards - 1) // cards_per_page + 1
 
-# 上下頁按鈕列
+# 分頁按鈕與跳頁功能
 col1, col2, col3 = st.columns([1, 2, 1])
 with col1:
     if st.button("⬅ 上一頁") and st.session_state.page > 1:
@@ -101,14 +99,20 @@ with col3:
     if st.button("下一頁 ➡") and st.session_state.page < total_pages:
         st.session_state.page += 1
 with col2:
-    st.markdown(f"<div style='text-align:center; font-size:18px; color:white;'>📄 第 {st.session_state.page} / {total_pages} 頁</div>", unsafe_allow_html=True)
+    selected_page = st.selectbox(
+        "📄 選擇頁碼",
+        options=list(range(1, total_pages + 1)),
+        index=st.session_state.page - 1,
+        key="page_select"
+    )
+    if selected_page != st.session_state.page:
+        st.session_state.page = selected_page
 
-# 計算範圍並篩選卡片
 start_idx = (st.session_state.page - 1) * cards_per_page
 end_idx = start_idx + cards_per_page
 cards_page_df = cards_df.iloc[start_idx:end_idx]
 
-# ✅ 樣式設定（3 欄顯示）
+# 樣式
 st.markdown("""
 <style>
 .card-gallery {
@@ -152,9 +156,8 @@ main > div:has(.card-gallery) {
 </style>
 """, unsafe_allow_html=True)
 
-# ✅ 顯示卡片內容（3 欄排版）
+# 顯示卡片
 cols = st.columns(3)
-
 for idx, (_, row) in enumerate(cards_page_df.iterrows()):
     name = row["名稱"]
     rarity = row["稀有度"]
