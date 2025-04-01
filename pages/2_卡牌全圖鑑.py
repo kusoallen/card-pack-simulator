@@ -83,6 +83,18 @@ if subject_sort == "A → Z":
 elif subject_sort == "Z → A":
     cards_df = cards_df.sort_values(by="科目", ascending=False)
 
+# ✅ 分頁功能設定
+cards_per_page = 9
+total_cards = len(cards_df)
+total_pages = (total_cards - 1) // cards_per_page + 1
+
+# 頁碼輸入（可以改成 slider）
+page = st.number_input("📄 頁碼選擇", min_value=1, max_value=total_pages, value=1, step=1)
+
+# 取得目前頁數要顯示的卡牌
+start_idx = (page - 1) * cards_per_page
+end_idx = start_idx + cards_per_page
+cards_page_df = cards_df.iloc[start_idx:end_idx]
 
 # ✅ 樣式設定（3 欄顯示）
 st.markdown("""
@@ -121,17 +133,17 @@ st.markdown("""
     color: gold;
     font-size: 14px;
 }
-/* ✅ 強制拉寬整個主區塊，讓三欄排版能生效 */
 main > div:has(.card-gallery) {
     max-width: 1400px !important;
     margin: 0 auto;
 }
 </style>
 """, unsafe_allow_html=True)
-# ✅ 卡片顯示 HTML 組裝
+
+# ✅ 顯示卡片內容（3 欄排版）
 cols = st.columns(3)
 
-for idx, (_, row) in enumerate(cards_df.iterrows()):
+for idx, (_, row) in enumerate(cards_page_df.iterrows()):
     name = row["名稱"]
     rarity = row["稀有度"]
     img_path = None
