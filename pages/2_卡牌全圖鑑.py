@@ -83,16 +83,28 @@ if subject_sort == "A → Z":
 elif subject_sort == "Z → A":
     cards_df = cards_df.sort_values(by="科目", ascending=False)
 
-# ✅ 分頁功能設定
+# ✅ 初始化頁碼狀態
+if "page" not in st.session_state:
+    st.session_state.page = 1
+
+# 分頁參數設定
 cards_per_page = 9
 total_cards = len(cards_df)
 total_pages = (total_cards - 1) // cards_per_page + 1
 
-# 頁碼輸入（可以改成 slider）
-page = st.number_input("📄 頁碼選擇", min_value=1, max_value=total_pages, value=1, step=1)
+# 上下頁按鈕列
+col1, col2, col3 = st.columns([1, 2, 1])
+with col1:
+    if st.button("⬅ 上一頁") and st.session_state.page > 1:
+        st.session_state.page -= 1
+with col3:
+    if st.button("下一頁 ➡") and st.session_state.page < total_pages:
+        st.session_state.page += 1
+with col2:
+    st.markdown(f"<div style='text-align:center; font-size:18px; color:white;'>📄 第 {st.session_state.page} / {total_pages} 頁</div>", unsafe_allow_html=True)
 
-# 取得目前頁數要顯示的卡牌
-start_idx = (page - 1) * cards_per_page
+# 計算範圍並篩選卡片
+start_idx = (st.session_state.page - 1) * cards_per_page
 end_idx = start_idx + cards_per_page
 cards_page_df = cards_df.iloc[start_idx:end_idx]
 
