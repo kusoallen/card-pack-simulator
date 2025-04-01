@@ -4,7 +4,6 @@ import streamlit.components.v1 as components
 import pandas as pd
 import random
 from datetime import datetime
-from google.oauth2.service_account import Credentials
 import os
 from PIL import Image
 import time
@@ -12,8 +11,6 @@ import base64
 import zipfile
 import io
 import pytz
-
-import sqlite3
 
 st.set_page_config(page_title="優等卡牌 抽卡模擬器", layout="wide")
 
@@ -55,68 +52,24 @@ for _, row in cards_df.iterrows():
     weight = rarity_weights.get(row["稀有度"], 0)
     card_pool.append((row["名稱"], row["稀有度"], weight))
 
-DB_PATH = "draw_card.db"
+# 抽卡函數
+def draw_single():
+    pool = [card for card in card_pool for _ in range(card[2])]
+    drawn = random.sample(pool, 1)
+    return pd.DataFrame(drawn, columns=["卡名", "稀有度", "_weight"]).drop(columns="_weight")
 
-# Google Sheet 認證與連線
-SCOPE = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = Credentials.from_service_account_info(st.secrets["gspread"], scopes=SCOPE)
-client = gspread.authorize(creds)
-sheet = client.open_by_url(st.secrets["gspread"]["sheet_url"])
-worksheet = sheet.get_worksheet(0)  # 第一個工作表
+def draw_pack():
+    pool = [card for card in card_pool for _ in range(card[2])]
+    drawn = random.sample(pool, 5)
+    return pd.DataFrame(drawn, columns=["卡名", "稀有度", "_weight"]).drop(columns="_weight")
 
-# 取得某學生已抽卡紀錄
-def get_student_card_counts(student_id):
-    records = worksheet.get_all_records()
-    filtered = [r for r in records if r["學號"] == student_id]
-    counts = {}
-    for row in filtered:
-        name = row["卡名"]
-        counts[name] = counts.get(name, 0) + 1
-    return counts
-
-# 取得學生目前保底進度（讀 Sheet 最後一筆資料）
-def get_status(student_id):
-    records = worksheet.get_all_records()
-    student_draws = [r for r in records if r["學號"] == student_id]
-    total = len(student_draws)
-    no_legend = 0
-    for r in reversed(student_draws):
-        if r["稀有度"] == "傳說":
-            break
-        no_legend += 1
-    return total, no_legend
-
-# 寫入抽卡紀錄到 Google Sheet
-def save_draw(student_id, card_name, rarity):
-    now = datetime.now(pytz.timezone("Asia/Taipei")).strftime("%Y-%m-%d %H:%M:%S")
-    worksheet.append_row([student_id, card_name, rarity, now])
-
-# 主抽卡函數
-
-def draw_card(student_id, full_card_pool):
-    card_counts = get_student_card_counts(student_id)
-    total, no_legend = get_status(student_id)
-
-    # 過濾已抽滿2張的 普通/稀有/史詩 卡
-    filtered_pool = []
-    for name, rarity, weight in full_card_pool:
-        count = card_counts.get(name, 0)
-        if rarity in ["普通", "稀有", "史詩"] and count >= 2:
-            continue
-        filtered_pool.append((name, rarity, weight))
-
-    # 保底傳說
-    if no_legend >= 49:
-        legend_pool = [(n, r, w) for n, r, w in filtered_pool if r == "傳說"]
-        chosen = random.choices(legend_pool or filtered_pool, weights=[c[2] for c in (legend_pool or filtered_pool)])[0]
-    else:
-        chosen = random.choices(filtered_pool, weights=[c[2] for c in filtered_pool])[0]
-
-    name, rarity, _ = chosen
-    save_draw(student_id, name, rarity)
-
-    return pd.DataFrame([[name, rarity]], columns=["卡名", "稀有度"])
-
+# 模擬多包抽卡
+def simulate_draws(n_packs=10):
+    all_packs = []
+    for _ in range(n_packs):
+        pack = draw_pack()
+        all_packs.append(pack)
+    return pd.concat(all_packs, ignore_index=True)
 
 # ✅ 加入學號欄位並儲存結果
 def save_draw_result(result_df, student_id):
@@ -398,17 +351,21 @@ if student_id:
     if mode == "抽幾包卡（每包5張）":
         packs = st.number_input("請輸入要抽幾包卡（每包5張）", min_value=1, max_value=5, value=1)
         if st.button("開始抽卡！"):
-            all_cards = [draw_card(student_id, card_pool) for _ in range(packs * 5)]
-            result = pd.concat(all_cards, ignore_index=True)
+            result = simulate_draws(packs)
             st.success(f"已抽出 {packs} 包，共 {len(result)} 張卡！")
+            saved_file = save_draw_result(result, student_id)
+            st.info(f"抽卡紀錄已儲存至：{saved_file}")
             if animate:
                 show_card_images_with_animation(result)
             else:
                 st.dataframe(result)
+
     else:
         if st.button("立即單抽！🎯"):
-            result = draw_card(student_id, card_pool)
+            result = draw_single()
             st.success("你抽到了 1 張卡片！")
+            saved_file = save_draw_result(result, student_id)
+            st.info(f"抽卡紀錄已儲存至：{saved_file}")
             if animate:
                 show_card_images_with_animation(result)
             else:
