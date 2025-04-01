@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import io
 import zipfile
+import base64
 from datetime import datetime
 
 st.set_page_config(page_title="查詢學生紀錄")
