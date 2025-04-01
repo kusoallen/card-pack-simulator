@@ -43,6 +43,43 @@ if os.path.exists(BACKGROUND_IMAGE_PATH):
 cards_df = pd.read_excel("優等卡牌 的副本.xlsx", sheet_name="工作表4")
 cards_df = cards_df[cards_df["類型"].isin(["學生卡", "知識卡", "武器卡"])]
 
+
+# 顯示背景音樂播放器（需使用者手動播放）
+def show_background_music_player():
+    music_path = "sounds/bgm.mp3"
+    if os.path.exists(music_path):
+        with open(music_path, "rb") as f:
+            data = f.read()
+            b64 = base64.b64encode(data).decode()
+            st.markdown(
+                f"""
+                <p>🎵 背景音樂：</p>
+                <audio controls loop>
+                    <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+                </audio>
+                """,
+                unsafe_allow_html=True
+            )
+
+# 播放傳說音效
+
+def play_sound(sound_file):
+    if os.path.exists(sound_file):
+        with open(sound_file, "rb") as f:
+            data = f.read()
+            b64 = base64.b64encode(data).decode()
+            st.markdown(
+                f"""
+                <audio autoplay>
+                    <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+                </audio>
+                """,
+                unsafe_allow_html=True
+            )
+
+
+
+
 # 🔍 抓取該學生已抽過的卡片數量
 def get_student_drawn_counts(student_id):
     try:
