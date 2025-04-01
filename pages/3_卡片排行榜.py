@@ -44,7 +44,7 @@ if st.button("載入排行榜"):
     all_worksheets = sheet.worksheets()
     summary = []
     for ws in all_worksheets:
-        if ws.title == "進度表":
+        if ws.title in ["進度表", "排行榜記錄"]:
             continue
         records = ws.get_all_records()
         df = pd.DataFrame(records)
