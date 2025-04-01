@@ -1,9 +1,34 @@
+import os
+from PIL import Image
+from io import BytesIO
+import base64
+import zipfile
+
 import streamlit as st
 import pandas as pd
 import gspread
 from google.oauth2.service_account import Credentials
 
 st.set_page_config(page_title="抽卡排行榜", layout="wide")
+
+# ✅ 背景圖片設定
+BACKGROUND_IMAGE_PATH = "background.png"
+if os.path.exists(BACKGROUND_IMAGE_PATH):
+    with open(BACKGROUND_IMAGE_PATH, "rb") as f:
+        bg_bytes = f.read()
+        bg_base64 = base64.b64encode(bg_bytes).decode()
+        page_bg = f"""
+        <style>
+        [data-testid="stApp"] {{
+            background-image: url("data:image/jpg;base64,{bg_base64}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }}
+        </style>
+        """
+        st.markdown(page_bg, unsafe_allow_html=True)
+
 
 # Google Sheet 授權與連結
 SCOPE = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
@@ -53,7 +78,20 @@ if st.button("載入排行榜"):
         # 加上名次徽章圖示
         badges = ["🥇", "🥈", "🥉"]
         summary_df.insert(0, "名次", [badges[i] if i < 3 else f"{i+1}" for i in range(len(summary_df))])
-        st.dataframe(summary_df)
+        # 使用樣式讓前三名整列變色
+        def highlight_top_rows(row):
+            if row.name == 0:
+                return ["background-color: gold"] * len(row)
+            elif row.name == 1:
+                return ["background-color: silver"] * len(row)
+            elif row.name == 2:
+                return ["background-color: #cd7f32"] * len(row)  # 銅色
+            else:
+                return [""] * len(row)
+
+        styled_df = summary_df.style.apply(highlight_top_rows, axis=1)
+        st.dataframe(styled_df, use_container_width=True)
     else:
         st.info("目前沒有任何抽卡紀錄。")
+
 
