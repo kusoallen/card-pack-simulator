@@ -173,11 +173,16 @@ for idx, (_, row) in enumerate(cards_page_df.iterrows()):
             img_b64 = base64.b64encode(f.read()).decode()
 
         with cols[idx % 3]:
-            st.image(f"data:image/png;base64,{img_b64}", use_container_width=True)
-            st.markdown(
-                f"""
-                <div style='text-align: center; color: gold; font-weight: bold;'>{name}（{rarity}）</div>
-                <div style='text-align: center; color: white; font-size: 13px;'>KN 消耗：{row["KN"]}</div>
-                """,
-                unsafe_allow_html=True
-            )
+            if st.button(f"🖼️ 查看 {name}", key=f"view_{idx}"):
+                with st.modal(f"{name}（{rarity}）"):
+                    st.image(f"data:image/png;base64,{img_b64}", caption=name, use_column_width=True)
+                    st.markdown(f"**稀有度**：{rarity}  \n**KN 消耗**：{row['KN']}", unsafe_allow_html=True)
+            else:
+                st.image(f"data:image/png;base64,{img_b64}", use_container_width=True)
+                st.markdown(
+                    f"""
+                    <div style='text-align: center; color: gold; font-weight: bold;'>{name}（{rarity}）</div>
+                    <div style='text-align: center; color: white; font-size: 13px;'>KN 消耗：{row["KN"]}</div>
+                    """,
+                    unsafe_allow_html=True
+                 )
