@@ -21,7 +21,7 @@ client = gspread.authorize(creds)
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1-uKCq-8w_c3EUItPKV9NnEVkRAQiC5I5vW2BZr8NFfg/edit"
 sheet = client.open_by_url(SHEET_URL)
 
-st.set_page_config(page_title="優等卡牌 抽卡模擬器", layout="wide")
+st.set_page_config(page_title="優等學院對戰卡牌 抽卡紀錄器", layout="wide")
 
 BACKGROUND_IMAGE_PATH = "background.png"
 if os.path.exists(BACKGROUND_IMAGE_PATH):
@@ -354,7 +354,32 @@ def show_card_images_with_animation(card_df):
 
 # --- Streamlit 前端 ---
 
-st.title("優等卡牌 抽卡模擬器")
+st.title("優等學院對戰卡牌 抽卡紀錄器")
+
+# 遊戲介紹區塊
+st.markdown("""
+## 遊戲介紹
+
+你是優等學院的老師，帶領學生學習、比賽、挑戰課程。  
+透過學生卡、知識卡、事件卡與英雄老師的技能，  
+在學科戰場上擊敗對手的英雄，取得勝利！
+
+---
+
+### 選擇你的英雄導師！
+
+以下是四位英雄導師，請選擇你喜歡的導師組成卡組：  
+每副牌由 **1 張英雄卡 + 30 張主牌** 組成。  
+主牌包括學生卡、知識卡。  
+- 每張卡最多放入 2 張  
+- 傳說卡最多放入 1 張
+
+---
+
+**完成功課、達成進度，開啟你的抽卡之旅吧！**
+""")
+
+
 # 顯示 4 張英雄卡封面（含 hover 特效）
 st.markdown("""
 <style>
