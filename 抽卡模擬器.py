@@ -378,7 +378,13 @@ if "show_draw_page" not in st.session_state:
     st.session_state["show_draw_page"] = False
 
 
-# 首頁介紹（包成區塊，按下按鈕後就不顯示）
+# 處理按鈕點擊（提前變更狀態，避免需點兩次）
+if not st.session_state["show_draw_page"]:
+    if st.button("開始抽卡！"):
+        st.session_state["show_draw_page"] = True
+        st.experimental_rerun()
+
+# 首頁介紹（只有在未切換前顯示）
 if not st.session_state["show_draw_page"]:
     with st.container():
         st.markdown("""
@@ -403,13 +409,9 @@ if not st.session_state["show_draw_page"]:
         **完成功課、達成進度，開啟你的抽卡之旅吧！**
         """)
 
-        if st.button("開始抽卡！"):
-            st.session_state["show_draw_page"] = True
-        else:
-            st.stop()
-
 # ✅ 正式進入抽卡頁面
-show_background_music_player()
+if st.session_state["show_draw_page"]:
+    show_background_music_player()
 
 # 顯示 4 張英雄卡封面（含 hover 特效）
 st.markdown("""
