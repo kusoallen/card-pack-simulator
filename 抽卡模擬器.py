@@ -387,7 +387,7 @@ if not st.session_state["show_draw_page"]:
     
     if st.button("🎯 開始抽卡！"):
         st.session_state["show_draw_page"] = True
-        st.experimental_rerun()
+        
 
     st.stop()
 else:
