@@ -454,7 +454,7 @@ if student_id:
             result = draw_single(student_id)
             st.success("你抽到了 1 張卡片！")
             saved_file = save_draw_result(result, student_id)
-            st.info(f"抽卡紀錄已儲存至：{saved_file}")
+            #st.info(f"抽卡紀錄已儲存至：{saved_file}")
             if animate:
                 show_card_images_with_animation(result)
             else:
