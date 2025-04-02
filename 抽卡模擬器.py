@@ -376,79 +376,6 @@ def show_background_music_player():
 # 狀態管理
 if "show_draw_page" not in st.session_state:
     st.session_state["show_draw_page"] = False
-if "start_transition" not in st.session_state:
-    st.session_state["start_transition"] = False
-if "transition_start_time" not in st.session_state:
-    st.session_state["transition_start_time"] = 0.0
-
-if st.session_state["start_transition"] and not st.session_state["show_draw_page"]:
-    show_background_music_player()  # ✅ 動畫階段即播放音樂
-
-    # 顯示開門動畫畫面
-    st.markdown("""
-    <style>
-    .door-container {
-        width: 100%;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: black;
-        overflow: hidden;
-    }
-    .door {
-        width: 50%;
-        height: 100%;
-        background-color: #333;
-        position: absolute;
-        top: 0;
-        transition: transform 2s ease-in-out;
-        z-index: 2;
-    }
-    .left-door {
-        left: 0;
-        transform: translateX(0);
-    }
-    .right-door {
-        right: 0;
-        transform: translateX(0);
-    }
-    .door.open-left {
-        transform: translateX(-100%);
-    }
-    .door.open-right {
-        transform: translateX(100%);
-    }
-    .door-text {
-        z-index: 3;
-        color: gold;
-        font-size: 36px;
-        font-weight: bold;
-        text-align: center;
-        animation: blink 1s infinite;
-    }
-    @keyframes blink {
-        0%   { opacity: 0.2; }
-        50%  { opacity: 1; }
-        100% { opacity: 0.2; }
-    }
-    </style>
-
-    <div class="door-container">
-        <div class="door left-door open-left"></div>
-        <div class="door right-door open-right"></div>
-        <div class="door-text">大門開啟中...</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # 等候 2 秒後自動切換畫面（不使用 experimental_rerun）
-    if time.time() - st.session_state["transition_start_time"] > 2:
-        st.session_state["show_draw_page"] = True
-        st.session_state["start_transition"] = False
-        st.session_state["transition_start_time"] = 0.0
-    else:
-        st.stop()
-
 
 # 如果還沒進入抽卡頁面，先顯示介紹畫面
 if not st.session_state["show_draw_page"]:
@@ -476,14 +403,12 @@ if not st.session_state["show_draw_page"]:
     """)
     
     if st.button("開始抽卡！"):
-        st.session_state["start_transition"] = True
-        st.session_state["transition_start_time"] = time.time()
+        st.session_state["show_draw_page"] = True
+        show_background_music_player()
     st.stop()
-else:
-    # 進入抽卡頁面時播放背景音樂
-    show_background_music_player()
 
-
+# ✅ 正式進入抽卡頁面
+show_background_music_player()
 
 # 顯示 4 張英雄卡封面（含 hover 特效）
 st.markdown("""
