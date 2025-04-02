@@ -38,7 +38,7 @@ client = gspread.authorize(creds)
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1-uKCq-8w_c3EUItPKV9NnEVkRAQiC5I5vW2BZr8NFfg/edit"
 sheet = client.open_by_url(SHEET_URL)
 
-st.title("🏆 優等卡牌 抽卡排行榜")
+st.title("🏆 優等學院 抽卡排行榜")
 
 if st.button("載入排行榜"):
     all_worksheets = sheet.worksheets()

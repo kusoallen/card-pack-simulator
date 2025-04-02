@@ -6,7 +6,7 @@ from datetime import datetime
 import base64
 import os
 
-st.set_page_config(page_title="查詢學生紀錄")
+st.set_page_config(page_title="抽卡紀錄查詢")
 
 # ✅ 背景圖片設定
 BACKGROUND_IMAGE_PATH = "background.png"
