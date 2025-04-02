@@ -370,7 +370,7 @@ def show_background_music_player():
                 </audio>
                 <script>
                     var audio = document.getElementById("bgm");
-                    audio.volume = 0.2;  // 設定音量為 20%
+                    audio.volume = 0.05;  // 設定音量為 20%
                 </script>
             """, height=100)
 
