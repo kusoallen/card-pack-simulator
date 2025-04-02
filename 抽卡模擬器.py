@@ -214,7 +214,6 @@ def show_card_images_with_animation(card_df):
         st.warning("請提供統一卡背圖 card_back.png 放在 card_images 資料夾內")
         return
 
-    # Base64 讀入音效
     def encode_audio(file_path):
         if not os.path.exists(file_path):
             return ""
@@ -232,9 +231,15 @@ def show_card_images_with_animation(card_df):
         card_width = 260
         card_height = 370
 
+    layout_style = (
+        'display: flex; justify-content: center; align-items: center; height: 100%; padding: 30px;'
+        if len(card_df) == 1 else
+        'display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; justify-items: center; padding: 20px; max-width: 1100px; margin: 0 auto;'
+    )
+
     container_css = f"""
     .card-container {{
-        {'display: flex; justify-content: center; align-items: center; height: 100%; padding: 30px;' if len(card_df) == 1 else 'display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; justify-items: center; padding: 20px; max-width: 1100px; margin: 0 auto;'}
+        {layout_style}
     }}
     .flip-card {{
         background-color: transparent;
@@ -288,63 +293,61 @@ def show_card_images_with_animation(card_df):
                 </div>
               </div>
             </div>
-    
-    """
+            """
 
         if (idx + 1) % 5 == 0:
             html_cards += "<div style='flex-basis: 100%; height: 10px;'></div>"
             scroll_to_bottom()
         time.sleep(0.2)
 
-    final_html = f"""
+    static_css = """
     <style>
-    {container_css}
-    .flip-card-inner {{
+    .flip-card-inner {
         position: relative;
         width: 100%;
         height: 100%;
         text-align: center;
         transition: transform 0.8s;
         transform-style: preserve-3d;
-    }}
-    .flipped .flip-card-inner {{
+    }
+    .flipped .flip-card-inner {
         transform: rotateY(180deg);
-    }}
-    .flip-card-front, .flip-card-back {{
+    }
+    .flip-card-front, .flip-card-back {
         position: absolute;
         width: 100%;
         height: 100%;
         backface-visibility: hidden;
         border-radius: 12px;
         box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    }}
-    .flip-card-back {{
+    }
+    .flip-card-back {
         transform: rotateY(180deg);
-    }}
-    .hover-glow-white:hover {{
+    }
+    .hover-glow-white:hover {
         box-shadow: 0 0 20px 5px white !important;
         animation: glow-white 1.5s infinite alternate;
-    }}
-    .hover-glow-purple:hover {{
+    }
+    .hover-glow-purple:hover {
         box-shadow: 0 0 20px 5px purple !important;
         animation: glow-purple 1.5s infinite alternate;
-    }}
-    .hover-glow-gold:hover {{
+    }
+    .hover-glow-gold:hover {
         box-shadow: 0 0 20px 5px gold !important;
         animation: glow-gold 1.5s infinite alternate;
-    }}
-    @keyframes glow-white {{
-        from {{ box-shadow: 0 0 5px white; }}
-        to {{ box-shadow: 0 0 25px white; }}
-    }}
-    @keyframes glow-purple {{
-        from {{ box-shadow: 0 0 5px purple; }}
-        to {{ box-shadow: 0 0 25px violet; }}
-    }}
-    @keyframes glow-gold {{
-        from {{ box-shadow: 0 0 5px gold; }}
-        to {{ box-shadow: 0 0 25px orange; }}
-    }}
+    }
+    @keyframes glow-white {
+        from { box-shadow: 0 0 5px white; }
+        to { box-shadow: 0 0 25px white; }
+    }
+    @keyframes glow-purple {
+        from { box-shadow: 0 0 5px purple; }
+        to { box-shadow: 0 0 25px violet; }
+    }
+    @keyframes glow-gold {
+        from { box-shadow: 0 0 5px gold; }
+        to { box-shadow: 0 0 25px orange; }
+    }
     @keyframes pulse {
         0%   { transform: scale(1); }
         50%  { transform: scale(1.1); }
@@ -354,11 +357,10 @@ def show_card_images_with_animation(card_df):
         animation: pulse 1s ease-in-out infinite;
     }
     </style>
-    <div class="card-container">
-    {html_cards}
-    </div>
     """
-    components.html(final_html, height=750, scrolling=True)
+
+    components.html(static_css + container_css + f"<div class='card-container'>{html_cards}</div>", height=750, scrolling=True)
+
 
 # --- Streamlit 前端 ---
 
