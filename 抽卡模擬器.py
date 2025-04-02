@@ -376,10 +376,11 @@ def show_background_music_player():
 if "show_draw_page" not in st.session_state:
     st.session_state["show_draw_page"] = False
 
-# 檢查是否要切換頁面
+# 處理按鈕點擊（獨立處理）
 if not st.session_state["show_draw_page"]:
     if st.button("開始抽卡！"):
         st.session_state["show_draw_page"] = True
+        st.experimental_rerun()
 
 # 顯示首頁介紹內容（如果尚未切換）
 if not st.session_state["show_draw_page"]:
