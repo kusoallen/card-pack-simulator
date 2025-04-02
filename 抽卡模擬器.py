@@ -115,7 +115,7 @@ def get_student_drawn_counts(student_id):
 def build_limited_card_pool(student_id):
     drawn_counts = get_student_drawn_counts(student_id)
     max_allowed = {"普通": 2, "稀有": 2, "史詩": 2, "傳說": 1}
-    rarity_weights = {"普通": 1, "稀有": 1, "史詩": 1, "傳說": 97}
+    rarity_weights = {"普通": 75, "稀有": 20, "史詩": 4, "傳說": 1}
 
     limited_pool = []
     for _, row in cards_df.iterrows():
