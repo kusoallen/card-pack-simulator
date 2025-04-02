@@ -225,11 +225,11 @@ def show_card_images_with_animation(card_df):
     sfx_epic = encode_audio("sounds/epic.mp3")
     sfx_rare = encode_audio("sounds/rare.mp3")
 
-    card_width = 200
-    card_height = 290
+    card_width = 160
+    card_height = 230
     if len(card_df) == 1:
-        card_width = 260
-        card_height = 370
+        card_width = 200
+        card_height = 280
 
     layout_style = (
         'display: flex; justify-content: center; align-items: center; height: 100%; padding: 30px;'
