@@ -347,7 +347,7 @@ def show_card_images_with_animation(card_df):
     }}
     @keyframes pulse {{
         0%   {{ transform: scale(1); }}
-        50%  {{ transform: scale(1.5); }}
+        50%  {{ transform: scale(1.2); }}
         100% {{ transform: scale(1); }}
     }}
     .pulse-animation {{
