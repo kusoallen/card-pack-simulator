@@ -356,6 +356,23 @@ def show_card_images_with_animation(card_df):
 
 st.title("優等學院對戰卡牌 抽卡紀錄器")
 
+# 背景音樂函式（可重複呼叫）
+def show_background_music_player():
+    music_path = "sounds/bgm.mp3"
+    if os.path.exists(music_path):
+        with open(music_path, "rb") as f:
+            data = f.read()
+            b64 = base64.b64encode(data).decode()
+            st.markdown(
+                f"""
+                <audio autoplay loop>
+                    <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+                </audio>
+                """,
+                unsafe_allow_html=True
+            )
+
+
 # 狀態管理
 if "show_draw_page" not in st.session_state:
     st.session_state["show_draw_page"] = False
@@ -364,15 +381,49 @@ if "start_transition" not in st.session_state:
 if "transition_start_time" not in st.session_state:
     st.session_state["transition_start_time"] = 0.0
 
-# 如果還沒進入抽卡畫面且有按下按鈕，顯示動畫然後等候 2 秒自動轉換狀態
 if st.session_state["start_transition"] and not st.session_state["show_draw_page"]:
-    # 顯示動畫畫面
+    show_background_music_player()  # ✅ 動畫階段即播放音樂
+
+    # 顯示開門動畫畫面
     st.markdown("""
     <style>
-    .loading-text {
-        font-size: 32px;
+    .door-container {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: black;
+        overflow: hidden;
+    }
+    .door {
+        width: 50%;
+        height: 100%;
+        background-color: #333;
+        position: absolute;
+        top: 0;
+        transition: transform 2s ease-in-out;
+        z-index: 2;
+    }
+    .left-door {
+        left: 0;
+        transform: translateX(0);
+    }
+    .right-door {
+        right: 0;
+        transform: translateX(0);
+    }
+    .door.open-left {
+        transform: translateX(-100%);
+    }
+    .door.open-right {
+        transform: translateX(100%);
+    }
+    .door-text {
+        z-index: 3;
+        color: gold;
+        font-size: 36px;
         font-weight: bold;
-        color: #ffd700;
         text-align: center;
         animation: blink 1s infinite;
     }
@@ -382,16 +433,22 @@ if st.session_state["start_transition"] and not st.session_state["show_draw_page
         100% { opacity: 0.2; }
     }
     </style>
-    <div class="loading-text">進入抽卡世界中...</div>
+
+    <div class="door-container">
+        <div class="door left-door open-left"></div>
+        <div class="door right-door open-right"></div>
+        <div class="door-text">大門開啟中...</div>
+    </div>
     """, unsafe_allow_html=True)
 
-    # 等候 2 秒後自動切換畫面（此時畫面會 refresh，進入抽卡頁）
+    # 等候 2 秒後自動切換畫面（不使用 experimental_rerun）
     if time.time() - st.session_state["transition_start_time"] > 2:
         st.session_state["show_draw_page"] = True
         st.session_state["start_transition"] = False
         st.session_state["transition_start_time"] = 0.0
     else:
         st.stop()
+
 
 # 如果還沒進入抽卡頁面，先顯示介紹畫面
 if not st.session_state["show_draw_page"]:
