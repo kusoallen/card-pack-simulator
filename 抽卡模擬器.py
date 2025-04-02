@@ -356,6 +356,7 @@ def show_card_images_with_animation(card_df):
 
 st.title("優等學院對戰卡牌 抽卡紀錄器")
 
+# 背景音樂函式（顯示播放器）
 def show_background_music_player():
     music_path = "sounds/bgm.mp3"
     if os.path.exists(music_path):
@@ -376,8 +377,6 @@ def show_background_music_player():
 if "show_draw_page" not in st.session_state:
     st.session_state["show_draw_page"] = False
 
-# 先記錄按鈕狀態
-start_button_pressed = st.button("開始抽卡！")
 
 # 如果還沒進入抽卡頁面，先顯示介紹畫面
 if not st.session_state["show_draw_page"]:
@@ -404,10 +403,10 @@ if not st.session_state["show_draw_page"]:
     **完成功課、達成進度，開啟你的抽卡之旅吧！**
     """)
     
-    if start_button_pressed:
+    if st.button("開始抽卡！"):
         st.session_state["show_draw_page"] = True
-        st.experimental_rerun()
-    st.stop()
+    else:
+        st.stop()
 
 # ✅ 正式進入抽卡頁面
 show_background_music_player()
