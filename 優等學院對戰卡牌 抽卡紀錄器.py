@@ -39,7 +39,6 @@ if os.path.exists(BACKGROUND_IMAGE_PATH):
         </style>
         """
         st.markdown(page_bg, unsafe_allow_html=True)
-]
 
 # ✅ 檢查學生是否符合抽卡資格（根據 Google Sheet "進度表"）
 def check_student_eligibility(student_id):
@@ -450,7 +449,7 @@ all_cards_df = pd.read_excel("優等卡牌 的副本.xlsx", sheet_name="遊戲�
 cards_df = all_cards_df[
     (all_cards_df["類型"].isin(["學生卡", "知識卡", "武器卡"])) &
     (all_cards_df["卡池分類"] == selected_pool)
-
+]
 # ✅ 檢查是否有資格抽卡
 if student_id and not check_student_eligibility(student_id):
     st.error("❌ 尚未達成抽卡資格，請完成指定進度後再試！")
