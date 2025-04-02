@@ -244,6 +244,7 @@ def show_card_images_with_animation(card_df):
         perspective: 1000px;
         position: relative;
         transition: box-shadow 0.5s ease-in-out;
+        animation: float 3s ease-in-out infinite;
     }}
     """
 
@@ -290,7 +291,6 @@ def show_card_images_with_animation(card_df):
                 </div>
               </div>
             </div>
-    
     """
 
         if (idx + 1) % 5 == 0:
@@ -351,6 +351,11 @@ def show_card_images_with_animation(card_df):
         0%   {{ transform: scale(1); }}
         50%  {{ transform: scale(1.2); }}
         100% {{ transform: scale(1); }}
+    }}
+    @keyframes float {{
+        0% {{ transform: translateY(0px); }}
+        50% {{ transform: translateY(-10px); }}
+        100% {{ transform: translateY(0px); }}
     }}
     .pulse-animation {{
         animation: pulse 1s ease-in-out infinite;
