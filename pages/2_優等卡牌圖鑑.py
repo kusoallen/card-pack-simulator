@@ -6,7 +6,7 @@ from io import BytesIO
 import base64
 import zipfile
 
-st.set_page_config(page_title="卡牌全圖鑑")
+st.set_page_config(page_title="優等卡牌圖鑑")
 
 # ✅ 背景圖片設定
 BACKGROUND_IMAGE_PATH = "background.png"
@@ -26,7 +26,7 @@ if os.path.exists(BACKGROUND_IMAGE_PATH):
         """
         st.markdown(page_bg, unsafe_allow_html=True)
 
-st.title("🃏 優等卡牌全圖鑑")
+st.title("🃏 優等卡牌圖鑑")
 
 # 載入卡牌資料
 cards_df = pd.read_excel("優等卡牌 的副本.xlsx", sheet_name="工作表4")
