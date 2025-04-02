@@ -366,9 +366,15 @@ def show_background_music_player():
             st.markdown(
                 f"""
                 <p>🎵 背景音樂：</p>
-                <audio controls autoplay loop>
+                <audio id="bgm-player" controls autoplay loop>
                     <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
                 </audio>
+                <script>
+                    const audio = document.getElementById("bgm-player");
+                    if (audio) {{
+                        audio.volume = 0.2;  // 音量設為 20%
+                    }}
+                </script>
                 """,
                 unsafe_allow_html=True
             )
