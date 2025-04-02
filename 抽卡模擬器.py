@@ -376,39 +376,38 @@ def show_background_music_player():
 if "show_draw_page" not in st.session_state:
     st.session_state["show_draw_page"] = False
 
-# 首頁介紹（只有在未切換前顯示）
+# 檢查是否要切換頁面
 if not st.session_state["show_draw_page"]:
-    with st.container():
-        st.markdown("""
-        ## 遊戲介紹
+    if st.button("開始抽卡！"):
+        st.session_state["show_draw_page"] = True
 
-        你是優等學院的老師，帶領學生學習、比賽、挑戰課程。  
-        透過學生卡、知識卡、事件卡與英雄老師的技能，  
-        在學科戰場上擊敗對手的英雄，取得勝利！
+# 顯示首頁介紹內容（如果尚未切換）
+if not st.session_state["show_draw_page"]:
+    st.markdown("""
+    ## 遊戲介紹
 
-        ---
+    你是優等學院的老師，帶領學生學習、比賽、挑戰課程。  
+    透過學生卡、知識卡、事件卡與英雄老師的技能，  
+    在學科戰場上擊敗對手的英雄，取得勝利！
 
-        ### 選擇你的英雄導師！
+    ---
 
-        以下是四位英雄導師，請選擇你喜歡的導師組成卡組：  
-        每副牌由 **1 張英雄卡 + 30 張主牌** 組成。  
-        主牌包括學生卡、知識卡。  
-        - 每張卡最多放入 2 張  
-        - 傳說卡最多放入 1 張
+    ### 選擇你的英雄導師！
 
-        ---
+    以下是四位英雄導師，請選擇你喜歡的導師組成卡組：  
+    每副牌由 **1 張英雄卡 + 30 張主牌** 組成。  
+    主牌包括學生卡、知識卡。  
+    - 每張卡最多放入 2 張  
+    - 傳說卡最多放入 1 張
 
-        **完成功課、達成進度，開啟你的抽卡之旅吧！**
-        """)
+    ---
 
-        if st.button("開始抽卡！"):
-            st.session_state["show_draw_page"] = True
-            st.stop()
-        else:
-            st.stop()
+    **完成功課、達成進度，開啟你的抽卡之旅吧！**
+    """)
 
 # ✅ 正式進入抽卡頁面
-show_background_music_player()
+if st.session_state["show_draw_page"]:
+    show_background_music_player()
 
 # 顯示 4 張英雄卡封面（含 hover 特效）
 st.markdown("""
