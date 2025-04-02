@@ -379,6 +379,7 @@ def show_card_images_with_animation(card_df):
 # --- Streamlit 前端 ---
 
 st.title("優等學院對戰卡牌 抽卡紀錄器")
+st.info("目前讀取的卡池為：" + selected_pool)
 
 # 背景音樂函式（顯示播放器）
 def show_background_music_player():
