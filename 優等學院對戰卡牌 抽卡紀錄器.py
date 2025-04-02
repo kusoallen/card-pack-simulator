@@ -40,8 +40,15 @@ if os.path.exists(BACKGROUND_IMAGE_PATH):
         """
         st.markdown(page_bg, unsafe_allow_html=True)
 
-cards_df = pd.read_excel("優等卡牌 的副本.xlsx", sheet_name="工作表4")
-cards_df = cards_df[cards_df["類型"].isin(["學生卡", "知識卡", "武器卡"])]
+# ✅ 玩家選擇要抽的卡池
+available_pools = ["基礎包", "羅馬戰士體驗營"]
+selected_pool = st.selectbox("請選擇想抽的卡包：", available_pools)
+
+# ✅ 根據卡池分類篩選卡片
+all_cards_df = pd.read_excel("優等卡牌 的副本.xlsx", sheet_name="遊戲卡片")
+cards_df = all_cards_df[
+    (all_cards_df["類型"].isin(["學生卡", "知識卡", "武器卡"])) &
+    (all_cards_df["卡池分類"] == selected_pool)
 
 # ✅ 檢查學生是否符合抽卡資格（根據 Google Sheet "進度表"）
 def check_student_eligibility(student_id):
