@@ -22,7 +22,7 @@ SHEET_URL = "https://docs.google.com/spreadsheets/d/1-uKCq-8w_c3EUItPKV9NnEVkRAQ
 sheet = client.open_by_url(SHEET_URL)
 
 st.set_page_config(page_title="優等學院對戰卡牌 抽卡紀錄器", layout="wide")
-
+st.info("目前讀取的卡池為：" + selected_pool)
 BACKGROUND_IMAGE_PATH = "background.png"
 if os.path.exists(BACKGROUND_IMAGE_PATH):
     with open(BACKGROUND_IMAGE_PATH, "rb") as f:
@@ -379,7 +379,7 @@ def show_card_images_with_animation(card_df):
 # --- Streamlit 前端 ---
 
 st.title("優等學院對戰卡牌 抽卡紀錄器")
-st.info("目前讀取的卡池為：" + selected_pool)
+
 
 # 背景音樂函式（顯示播放器）
 def show_background_music_player():
