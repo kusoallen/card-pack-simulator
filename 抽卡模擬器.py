@@ -417,7 +417,7 @@ if not st.session_state["show_draw_page"]:
     **完成功課、達成進度，開啟你的抽卡之旅吧！**
     """)
     
-    f st.button("🎯 開始抽卡！"):
+    if st.button("🎯 開始抽卡！"):
         st.session_state["start_transition"] = True
         st.session_state["transition_start_time"] = time.time()
         st.experimental_rerun()
