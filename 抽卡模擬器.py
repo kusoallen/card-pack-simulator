@@ -386,11 +386,12 @@ if st.session_state["start_transition"] and not st.session_state["show_draw_page
     """, unsafe_allow_html=True)
 
     # 等候 2 秒後自動切換畫面（此時畫面會 refresh，進入抽卡頁）
-    time.sleep(2)
-    st.session_state["show_draw_page"] = True
-    st.session_state["start_transition"] = False
-    st.session_state["transition_start_time"] = 0.0
-    st.experimental_rerun()
+    if time.time() - st.session_state["transition_start_time"] > 2:
+        st.session_state["show_draw_page"] = True
+        st.session_state["start_transition"] = False
+        st.session_state["transition_start_time"] = 0.0
+    else:
+        st.stop()
 
 # 如果還沒進入抽卡頁面，先顯示介紹畫面
 if not st.session_state["show_draw_page"]:
@@ -417,11 +418,9 @@ if not st.session_state["show_draw_page"]:
     **完成功課、達成進度，開啟你的抽卡之旅吧！**
     """)
     
-    if st.button("🎯 開始抽卡！"):
+    if st.button("開始抽卡！"):
         st.session_state["start_transition"] = True
         st.session_state["transition_start_time"] = time.time()
-        st.experimental_rerun()
-
     st.stop()
 else:
     # 進入抽卡頁面時播放背景音樂
