@@ -359,12 +359,40 @@ st.title("優等學院對戰卡牌 抽卡紀錄器")
 # 狀態控制：是否顯示抽卡頁面
 if "show_draw_page" not in st.session_state:
     st.session_state["show_draw_page"] = False
+if "start_transition" not in st.session_state:
+    st.session_state["start_transition"] = False
+
+# 顯示動畫轉場畫面
+if st.session_state["start_transition"] and not st.session_state["show_draw_page"]:
+    placeholder = st.empty()
+    with placeholder.container():
+        st.markdown("""
+        <style>
+        .loading-text {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffd700;
+            text-align: center;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%   { opacity: 0.2; }
+            50%  { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+        </style>
+        <div class="loading-text">進入抽卡世界中...</div>
+        """, unsafe_allow_html=True)
+    time.sleep(2)
+    st.session_state["show_draw_page"] = True
+    st.experimental_rerun()
+
 
 # 如果還沒進入抽卡頁面，先顯示介紹畫面
 if not st.session_state["show_draw_page"]:
     # 顯示遊戲介紹與開始按鈕
     st.markdown("""
-    ## 🧑‍🏫 遊戲介紹
+    ## 遊戲介紹
 
     你是優等學院的老師，帶領學生學習、比賽、挑戰課程。  
     透過學生卡、知識卡、事件卡與英雄老師的技能，  
@@ -372,7 +400,7 @@ if not st.session_state["show_draw_page"]:
 
     ---
 
-    ### 🧙‍♂️ 選擇你的英雄導師！
+    ### 選擇你的英雄導師！
 
     以下是四位英雄導師，請選擇你喜歡的導師組成卡組：  
     每副牌由 **1 張英雄卡 + 30 張主牌** 組成。  
@@ -382,12 +410,12 @@ if not st.session_state["show_draw_page"]:
 
     ---
 
-    📚 **完成功課、達成進度，開啟你的抽卡之旅吧！**
+    **完成功課、達成進度，開啟你的抽卡之旅吧！**
     """)
     
-    if st.button("🎯 開始抽卡！"):
+    if st.button("開始抽卡！"):
         st.session_state["show_draw_page"] = True
-        
+        st.experimental_rerun()
 
     st.stop()
 else:
