@@ -376,11 +376,7 @@ def show_background_music_player():
 if "show_draw_page" not in st.session_state:
     st.session_state["show_draw_page"] = False
 
-# 處理按鈕點擊（獨立處理）
-if not st.session_state["show_draw_page"]:
-    if st.button("開始抽卡！"):
-        st.session_state["show_draw_page"] = True
-        st.experimental_rerun()
+
 
 # 顯示首頁介紹內容（如果尚未切換）
 if not st.session_state["show_draw_page"]:
@@ -405,6 +401,13 @@ if not st.session_state["show_draw_page"]:
 
     **完成功課、達成進度，開啟你的抽卡之旅吧！**
     """)
+
+# 處理按鈕點擊（更新狀態，並用 stop 中斷讓下一輪刷新）
+if not st.session_state["show_draw_page"]:
+    if st.button("開始抽卡！"):
+        st.session_state["show_draw_page"] = True
+        st.markdown("請稍候... 正在載入抽卡頁面")
+        st.stop()
 
 # ✅ 正式進入抽卡頁面
 if st.session_state["show_draw_page"]:
