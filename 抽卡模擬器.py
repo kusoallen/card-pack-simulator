@@ -422,17 +422,6 @@ for i, name in enumerate(hero_names):
         """, unsafe_allow_html=True)
        
 
-if not st.session_state.authenticated:
-    st.subheader("🔐 請先輸入密碼進入抽卡區")
-    password = st.text_input("密碼：", type="password", key="card_draw_pwd")
-    correct_password = "8341"
-    if password == correct_password:
-        st.session_state.authenticated = True
-        st.rerun()
-    else:
-        st.warning("請輸入正確密碼以開始抽卡。")
-        st.stop()
-
 # 🧑‍🎓 輸入學號
 student_id = st.text_input("請輸入學號：")
 
