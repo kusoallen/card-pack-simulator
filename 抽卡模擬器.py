@@ -364,11 +364,8 @@ if "start_transition" not in st.session_state:
 if "transition_start_time" not in st.session_state:
     st.session_state["transition_start_time"] = 0.0
 
-# 動畫階段：顯示轉場動畫
+# 如果還沒進入抽卡畫面且有按下按鈕，顯示動畫然後等候 2 秒自動轉換狀態
 if st.session_state["start_transition"] and not st.session_state["show_draw_page"]:
-    if st.session_state["transition_start_time"] == 0.0:
-        st.session_state["transition_start_time"] = time.time()
-
     # 顯示動畫畫面
     st.markdown("""
     <style>
@@ -388,14 +385,12 @@ if st.session_state["start_transition"] and not st.session_state["show_draw_page
     <div class="loading-text">進入抽卡世界中...</div>
     """, unsafe_allow_html=True)
 
-    # 如果已過 2 秒就切換畫面
-    if time.time() - st.session_state["transition_start_time"] > 2:
-        st.session_state["show_draw_page"] = True
-        st.session_state["start_transition"] = False
-        st.session_state["transition_start_time"] = 0.0
-
-    st.stop()
-
+    # 等候 2 秒後自動切換畫面（此時畫面會 refresh，進入抽卡頁）
+    time.sleep(2)
+    st.session_state["show_draw_page"] = True
+    st.session_state["start_transition"] = False
+    st.session_state["transition_start_time"] = 0.0
+    st.experimental_rerun()
 
 # 如果還沒進入抽卡頁面，先顯示介紹畫面
 if not st.session_state["show_draw_page"]:
@@ -422,9 +417,10 @@ if not st.session_state["show_draw_page"]:
     **完成功課、達成進度，開啟你的抽卡之旅吧！**
     """)
     
-    if st.button("開始抽卡！"):
-        st.session_state["show_draw_page"] = True
-        st.session_state["transition_start_time"] = 0.0  # reset 時間
+    f st.button("🎯 開始抽卡！"):
+        st.session_state["start_transition"] = True
+        st.session_state["transition_start_time"] = time.time()
+        st.experimental_rerun()
 
     st.stop()
 else:
