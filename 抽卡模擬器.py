@@ -361,23 +361,18 @@ def show_background_music_player():
     music_path = "sounds/bgm.mp3"
     if os.path.exists(music_path):
         with open(music_path, "rb") as f:
-            data = f.read()
-            b64 = base64.b64encode(data).decode()
-            st.markdown(
-                f"""
+            b64 = base64.b64encode(f.read()).decode()
+            components.html(f"""
                 <p>🎵 背景音樂：</p>
-                <audio id="bgm-player" controls autoplay loop>
+                <audio id="bgm" controls autoplay loop>
                     <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
+                    Your browser does not support the audio element.
                 </audio>
                 <script>
-                    const audio = document.getElementById("bgm-player");
-                    if (audio) {{
-                        audio.volume = 0.2;  // 音量設為 20%
-                    }}
+                    var audio = document.getElementById("bgm");
+                    audio.volume = 0.2;  // 設定音量為 20%
                 </script>
-                """,
-                unsafe_allow_html=True
-            )
+            """, height=100)
 
 show_background_music_player()
 
