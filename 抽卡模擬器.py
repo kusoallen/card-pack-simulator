@@ -356,7 +356,6 @@ def show_card_images_with_animation(card_df):
 
 st.title("優等學院對戰卡牌 抽卡紀錄器")
 
-# 背景音樂函式（可重複呼叫）
 def show_background_music_player():
     music_path = "sounds/bgm.mp3"
     if os.path.exists(music_path):
@@ -365,17 +364,20 @@ def show_background_music_player():
             b64 = base64.b64encode(data).decode()
             st.markdown(
                 f"""
-                <audio autoplay loop>
+                <p>🎵 背景音樂：</p>
+                <audio controls autoplay loop>
                     <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
                 </audio>
                 """,
                 unsafe_allow_html=True
             )
 
-
 # 狀態管理
 if "show_draw_page" not in st.session_state:
     st.session_state["show_draw_page"] = False
+
+# 先記錄按鈕狀態
+start_button_pressed = st.button("開始抽卡！")
 
 # 如果還沒進入抽卡頁面，先顯示介紹畫面
 if not st.session_state["show_draw_page"]:
@@ -402,9 +404,9 @@ if not st.session_state["show_draw_page"]:
     **完成功課、達成進度，開啟你的抽卡之旅吧！**
     """)
     
-    if st.button("開始抽卡！"):
+    if start_button_pressed:
         st.session_state["show_draw_page"] = True
-        show_background_music_player()
+        st.experimental_rerun()
     st.stop()
 
 # ✅ 正式進入抽卡頁面
