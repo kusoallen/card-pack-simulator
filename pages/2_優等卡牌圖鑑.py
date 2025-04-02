@@ -29,7 +29,7 @@ if os.path.exists(BACKGROUND_IMAGE_PATH):
 st.title("🃏 優等卡牌圖鑑")
 
 # 載入卡牌資料
-cards_df = pd.read_excel("優等卡牌 的副本.xlsx", sheet_name="工作表4")
+cards_df = pd.read_excel("優等卡牌 的副本.xlsx", sheet_name="遊戲卡片")
 card_folder = "card_images"
 
 # 過濾主卡（學生、知識、武器）
