@@ -345,14 +345,14 @@ def show_card_images_with_animation(card_df):
         from {{ box-shadow: 0 0 5px gold; }}
         to {{ box-shadow: 0 0 25px orange; }}
     }}
-    @keyframes pulse {
-        0%%   { transform: scale(1); }
-        50%%  { transform: scale(1.1); }
-        100%% { transform: scale(1); }
-    }
-    .pulse-animation {
+    @keyframes pulse {{
+        0%   {{ transform: scale(1); }}
+        50%  {{ transform: scale(1.1); }}
+        100% {{ transform: scale(1); }}
+    }}
+    .pulse-animation {{
         animation: pulse 1s ease-in-out infinite;
-    }
+    }}
     </style>
     <div class="card-container">
     {html_cards}
