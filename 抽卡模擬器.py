@@ -225,6 +225,7 @@ def show_card_images_with_animation(card_df):
     sfx_legendary = encode_audio("sounds/legendary.mp3")
     sfx_epic = encode_audio("sounds/epic.mp3")
     sfx_rare = encode_audio("sounds/rare.mp3")
+    sfx_hover = encode_audio("sounds/hover.mp3")  # 統一 hover 音效
 
     card_width = 200
     card_height = 290
@@ -275,9 +276,10 @@ def show_card_images_with_animation(card_df):
                 sound_data = ""
 
             audio_tag = f"var a=new Audio('{sound_data}');a.play();" if sound_data else ""
-
+            hover_audio = f"onmouseenter=\"if(!this.hovered){{this.hovered=true;this.sound=new Audio('{sfx_hover}');this.sound.loop=true;this.sound.volume=0.4;this.sound.play();}}\" onmouseleave=\"if(this.sound){{this.sound.pause();this.sound.currentTime=0;this.hovered=false;}}\""
+            
             html_cards += f"""
-            <div class="flip-card {rarity_class}" onclick="this.classList.add('flipped'); {audio_tag}">
+            <div class="flip-card {rarity_class}" onclick="this.classList.add('flipped'); {audio_tag}" {hover_audio}>
               <div class="flip-card-inner">
                 <div class="flip-card-front">
                   <img src="data:image/png;base64,{back_b64}" width="100%">
