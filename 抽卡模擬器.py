@@ -359,7 +359,7 @@ def show_card_images_with_animation(card_df):
     </style>
     """
 
-    components.html(static_css + container_css + f"<div class='card-container'>{html_cards}</div>", height=750, scrolling=True)
+    components.html(final_html, height=750, scrolling=True)
 
 
 # --- Streamlit 前端 ---
