@@ -43,11 +43,20 @@ if os.path.exists(BACKGROUND_IMAGE_PATH):
 # ✅ 檢查學生是否符合抽卡資格（根據 Google Sheet "進度表"）
 def check_student_eligibility(student_id):
     try:
-        progress_ws = sheet.worksheet("進度表")  # 這裡請確認你的工作表名稱
+        progress_ws = sheet.worksheet("進度表")
         records = progress_ws.get_all_records()
-        for row in records:
+        today = datetime.now(pytz.timezone("Asia/Taipei")).strftime("%Y-%m-%d")
+        for i, row in enumerate(records):
             if str(row.get("學號")).strip() == str(student_id).strip():
-                return row.get("可抽卡") == "是"
+                work_ok = row.get("完成作業") == "是" and row.get("作業最後抽卡日") != today
+                progress_ok = row.get("完成進度") == "是" and row.get("進度最後抽卡日") != today
+                if work_ok or progress_ok:
+                    # 更新抽卡日回寫到 Google Sheet
+                    if work_ok:
+                        progress_ws.update_cell(i+2, row.keys().index("作業最後抽卡日")+1, today)
+                    elif progress_ok:
+                        progress_ws.update_cell(i+2, row.keys().index("進度最後抽卡日")+1, today)
+                    return True
     except:
         st.error("讀取進度表失敗，請確認工作表名稱與權限")
     return False
