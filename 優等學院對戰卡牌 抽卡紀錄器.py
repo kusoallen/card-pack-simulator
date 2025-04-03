@@ -39,27 +39,35 @@ if os.path.exists(BACKGROUND_IMAGE_PATH):
         </style>
         """
         st.markdown(page_bg, unsafe_allow_html=True)
-
-# ✅ 檢查學生是否符合抽卡資格（根據 Google Sheet "進度表"）
 def check_student_eligibility(student_id):
     try:
         progress_ws = sheet.worksheet("進度表")
-        st.success("✅ 成功讀取進度表！")
         records = progress_ws.get_all_records()
         today = datetime.now(pytz.timezone("Asia/Taipei")).strftime("%Y-%m-%d")
+
         for i, row in enumerate(records):
             if str(row.get("學號")).strip() == str(student_id).strip():
                 work_ok = row.get("完成作業") == "是" and row.get("作業最後抽卡日") != today
                 progress_ok = row.get("完成進度") == "是" and row.get("進度最後抽卡日") != today
+
+                if student_id == "test":
+                    st.info(f"row: {row}")
+                    st.info(f"work_ok: {work_ok}, progress_ok: {progress_ok}")
+
                 if work_ok or progress_ok:
-                    # 更新抽卡日回寫到 Google Sheet
-                    if work_ok:
-                        progress_ws.update_cell(i+2, row.keys().index("作業最後抽卡日")+1, today)
-                    elif progress_ok:
-                        progress_ws.update_cell(i+2, row.keys().index("進度最後抽卡日")+1, today)
+                    try:
+                        header = list(row.keys())
+                        if work_ok and "作業最後抽卡日" in header:
+                            progress_ws.update_cell(i+2, header.index("作業最後抽卡日") + 1, today)
+                        elif progress_ok and "進度最後抽卡日" in header:
+                            progress_ws.update_cell(i+2, header.index("進度最後抽卡日") + 1, today)
+                    except Exception as e:
+                        st.warning(f"⚠️ 更新最後抽卡日失敗：{e}")
                     return True
-    except:
-        st.error("讀取進度表失敗，請確認工作表名稱與權限")
+                else:
+                    st.warning("⚠️ 今天已經抽過卡了或尚未完成作業/進度")
+    except Exception as e:
+        st.error(f"❌ 無法讀取進度表：{e}")
     return False
 
 # 用來記錄密碼是否正確（Session State）
