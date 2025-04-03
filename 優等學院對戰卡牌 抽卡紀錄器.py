@@ -453,15 +453,11 @@ for i, name in enumerate(hero_names):
        
 
 
-# ✅ 若尚未驗證成功則提示輸入學號與檢查
-if "draw_opportunities" not in st.session_state:
-    student_id = st.text_input("請輸入學號：", key="student_id_input")
-    if student_id:
-        check_student_eligibility(student_id)
-else:
-    student_id = st.session_state.get("student_id", "")
+# ✅ 學號輸入欄保持可見
+student_id = st.text_input("請輸入學號：", key="student_id_input")
 
-
+if student_id and "draw_opportunities" not in st.session_state:
+    check_student_eligibility(student_id)
 
 
 # ✅ 玩家選擇要抽的卡池
