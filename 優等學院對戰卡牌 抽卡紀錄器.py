@@ -473,19 +473,10 @@ if "draw_times" not in st.session_state:
         check_student_eligibility(student_id)
 
 
-# ✅ 讀取抽卡次數後執行對應抽卡（示範）
+# ✅ 讀取抽卡次數後僅顯示提示
 if "draw_times" in st.session_state:
     if st.session_state["draw_times"] > 0:
         st.success(f"🎉 你今天有 {st.session_state['draw_times']} 次抽卡機會！")
-        for i in range(st.session_state["draw_times"]):
-            if st.button(f"立即抽卡！（第 {i+1} 次）", key=f"draw_{i}"):
-                result = draw_single(student_id)
-                st.success("你抽到了 1 張卡片！")
-                saved_file = save_draw_result(result, student_id)
-                if animate:
-                    show_card_images_with_animation(result)
-                else:
-                    st.dataframe(result)
     else:
         st.info("✅ 尚無可用抽卡次數，請先完成作業或進度！")
 
