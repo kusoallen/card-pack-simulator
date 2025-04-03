@@ -39,6 +39,9 @@ if os.path.exists(BACKGROUND_IMAGE_PATH):
         </style>
         """
         st.markdown(page_bg, unsafe_allow_html=True)
+
+
+# ✅ 檢查學生是否符合抽卡資格（根據 Google Sheet "進度表"）
 def check_student_eligibility(student_id):
     try:
         progress_ws = sheet.worksheet("進度表")
@@ -464,13 +467,13 @@ for i, name in enumerate(hero_names):
        
 
 
-
-# 🧑‍🎓 輸入學號
 # ✅ 若尚未驗證成功則提示輸入學號與檢查
 if "draw_times" not in st.session_state:
-    st.session_state["student_id"] = st.text_input("請輸入學號：", key="student_id_input")
-    if st.session_state["student_id"]:
-        check_student_eligibility(st.session_state["student_id"])
+    student_id = st.text_input("請輸入學號：", key="student_id_input")
+    if student_id:
+        check_student_eligibility(student_id)
+else:
+    student_id = st.session_state.get("student_id_input", "")
 
 
 # ✅ 讀取抽卡次數後僅顯示提示
@@ -479,7 +482,6 @@ if "draw_times" in st.session_state:
         st.success(f"🎉 你今天有 {st.session_state['draw_times']} 次抽卡機會！")
     else:
         st.info("✅ 尚無可用抽卡次數，請先完成作業或進度！")
-
 
 
 # ✅ 玩家選擇要抽的卡池
