@@ -44,6 +44,7 @@ if os.path.exists(BACKGROUND_IMAGE_PATH):
 def check_student_eligibility(student_id):
     try:
         progress_ws = sheet.worksheet("進度表")
+        st.success("✅ 成功讀取進度表！")
         records = progress_ws.get_all_records()
         today = datetime.now(pytz.timezone("Asia/Taipei")).strftime("%Y-%m-%d")
         for i, row in enumerate(records):
