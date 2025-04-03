@@ -52,34 +52,20 @@ def check_student_eligibility(student_id):
         for i, row in enumerate(records):
             if str(row.get("學號")).strip() == str(student_id).strip():
                 header = list(row.keys())
-                work_ok = row.get("完成作業") == "是" and row.get("作業最後抽卡日") != today
-                progress_ok = row.get("完成進度") == "是" and row.get("進度最後抽卡日") != today
+                draw_opportunities = {"作業": False, "進度": False}
+                if row.get("完成作業") == "是" and row.get("作業最後抽卡日") != today:
+                    draw_opportunities["作業"] = True
+                if row.get("完成進度") == "是" and row.get("進度最後抽卡日") != today:
+                    draw_opportunities["進度"] = True
 
-                if work_ok or progress_ok:
-                    try:
-                        if work_ok:
-                            col_idx = header.index("作業最後抽卡日") + 1
-                            progress_ws.update_cell(i + 2, col_idx, today)
-                        if progress_ok:
-                            col_idx = header.index("進度最後抽卡日") + 1
-                            progress_ws.update_cell(i + 2, col_idx, today)
-                    except Exception as e:
-                        st.warning(f"⚠️ 更新最後抽卡日失敗：{e}")
+                st.session_state["draw_opportunities"] = draw_opportunities
+                st.session_state["student_id"] = student_id
+                return
 
-                    times = 0
-                    if work_ok:
-                        times += 1
-                    if progress_ok:
-                        times += 1
-                    st.session_state["draw_times"] = times
-                    return True
-                else:
-                    st.warning("⚠️ 今天已經抽過卡了或尚未完成作業/進度")
+        st.session_state["draw_opportunities"] = {"作業": False, "進度": False}
     except Exception as e:
         st.error(f"❌ 無法讀取進度表：{e}")
-    return False
-
-
+        st.session_state["draw_opportunities"] = {"作業": False, "進度": False}
 
 
 # 用來記錄密碼是否正確（Session State）
@@ -468,20 +454,14 @@ for i, name in enumerate(hero_names):
 
 
 # ✅ 若尚未驗證成功則提示輸入學號與檢查
-if "draw_times" not in st.session_state:
+if "draw_opportunities" not in st.session_state:
     student_id = st.text_input("請輸入學號：", key="student_id_input")
     if student_id:
         check_student_eligibility(student_id)
 else:
-    student_id = st.session_state.get("student_id_input", "")
+    student_id = st.session_state.get("student_id", "")
 
 
-# ✅ 讀取抽卡次數後僅顯示提示
-if "draw_times" in st.session_state:
-    if st.session_state["draw_times"] > 0:
-        st.success(f"🎉 你今天有 {st.session_state['draw_times']} 次抽卡機會！")
-    else:
-        st.info("✅ 尚無可用抽卡次數，請先完成作業或進度！")
 
 
 # ✅ 玩家選擇要抽的卡池
@@ -494,10 +474,45 @@ cards_df = all_cards_df[
     (all_cards_df["類型"].isin(["學生卡", "知識卡", "武器卡"])) &
     (all_cards_df["卡池分類"] == selected_pool)
 ]
-# ✅ 檢查是否有資格抽卡
-if student_id and not check_student_eligibility(student_id):
-    st.error("❌ 尚未達成抽卡資格，請完成指定進度後再試！")
-    st.stop()
+# ✅ 顯示抽卡機會與按鈕
+if "draw_opportunities" in st.session_state:
+    opp = st.session_state["draw_opportunities"]
+    total = sum(1 for v in opp.values() if v)
+    if total > 0:
+        st.success(f"🎉 你今天有 {total} 次抽卡機會！")
+        if opp["作業"]:
+            if st.button("🎯 抽卡（完成作業）", key="draw_homework"):
+                result = draw_single(student_id)
+                st.success("你抽到了 1 張卡片！（作業）")
+                saved_file = save_draw_result(result, student_id)
+                show_card_images_with_animation(result)
+
+                try:
+                    progress_ws = sheet.worksheet("進度表")
+                    cell = progress_ws.find(student_id)
+                    col_idx = progress_ws.row_values(1).index("作業最後抽卡日") + 1
+                    progress_ws.update_cell(cell.row, col_idx, datetime.now(pytz.timezone("Asia/Taipei")).strftime("%Y-%m-%d"))
+                    st.rerun()
+                except:
+                    st.warning("⚠️ 無法更新作業抽卡日期。")
+
+        if opp["進度"]:
+            if st.button("🎯 抽卡（完成進度）", key="draw_progress"):
+                result = draw_single(student_id)
+                st.success("你抽到了 1 張卡片！（進度）")
+                saved_file = save_draw_result(result, student_id)
+                show_card_images_with_animation(result)
+
+                try:
+                    progress_ws = sheet.worksheet("進度表")
+                    cell = progress_ws.find(student_id)
+                    col_idx = progress_ws.row_values(1).index("進度最後抽卡日") + 1
+                    progress_ws.update_cell(cell.row, col_idx, datetime.now(pytz.timezone("Asia/Taipei")).strftime("%Y-%m-%d"))
+                    st.rerun()
+                except:
+                    st.warning("⚠️ 無法更新進度抽卡日期。")
+    else:
+        st.info("✅ 尚無可用抽卡次數，請先完成作業或進度！")
 
 
 
