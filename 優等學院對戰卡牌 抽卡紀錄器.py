@@ -92,11 +92,6 @@ if "draw_times" in st.session_state:
     else:
         st.info("✅ 尚無可用抽卡次數，請先完成作業或進度！")
 
-# ✅ 若尚未驗證成功則提示輸入學號與檢查
-if "draw_times" not in st.session_state:
-    student_id = st.text_input("請輸入學號：", key="student_id_input")
-    if student_id:
-        check_student_eligibility(student_id)
 
 
 # 用來記錄密碼是否正確（Session State）
@@ -484,7 +479,12 @@ for i, name in enumerate(hero_names):
        
 
 # 🧑‍🎓 輸入學號
-student_id = st.text_input("請輸入學號：", key="student_id_input")
+# ✅ 若尚未驗證成功則提示輸入學號與檢查
+if "draw_times" not in st.session_state:
+    student_id = st.text_input("請輸入學號：", key="student_id_input")
+    if student_id:
+        check_student_eligibility(student_id)
+
 
 
 # ✅ 玩家選擇要抽的卡池
