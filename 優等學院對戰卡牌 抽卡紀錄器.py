@@ -492,6 +492,8 @@ if "draw_opportunities" in st.session_state:
                     cell = progress_ws.find(student_id)
                     col_idx = progress_ws.row_values(1).index("作業最後抽卡日") + 1
                     progress_ws.update_cell(cell.row, col_idx, datetime.now(pytz.timezone("Asia/Taipei")).strftime("%Y-%m-%d"))
+                    # ✅ 移除當次抽卡機會並立即刷新
+                    st.session_state["draw_opportunities"]["作業"] = False
                     st.rerun()
                 except:
                     st.warning("⚠️ 無法更新作業抽卡日期。")
@@ -508,39 +510,10 @@ if "draw_opportunities" in st.session_state:
                     cell = progress_ws.find(student_id)
                     col_idx = progress_ws.row_values(1).index("進度最後抽卡日") + 1
                     progress_ws.update_cell(cell.row, col_idx, datetime.now(pytz.timezone("Asia/Taipei")).strftime("%Y-%m-%d"))
+                    # ✅ 移除當次抽卡機會並立即刷新
+                    st.session_state["draw_opportunities"]["進度"] = False
                     st.rerun()
                 except:
                     st.warning("⚠️ 無法更新進度抽卡日期。")
     else:
         st.info("✅ 尚無可用抽卡次數，請先完成作業或進度！")
-
-
-
-# 🔄 模式選擇
-mode = st.radio("請選擇抽卡模式：", ["單抽（1張卡）"])  #隱藏   "抽幾包卡（每包5張）", 
-animate = st.checkbox("啟用開包動畫模式", value=True)
-if student_id:
-    if mode == "抽幾包卡（每包5張）":
-        packs = st.number_input("請輸入要抽幾包卡（每包5張）", min_value=1, max_value=5, value=1)
-        if st.button("開始抽卡！"):
-            result = simulate_draws(student_id, packs)
-            st.success(f"已抽出 {packs} 包，共 {len(result)} 張卡！")
-            saved_file = save_draw_result(result, student_id)
-            st.info(f"抽卡紀錄已儲存至：{saved_file}")
-            if animate:
-                show_card_images_with_animation(result)
-            else:
-                st.dataframe(result)
-
-    else:
-        if st.button("立即單抽！🎯"):
-            result = draw_single(student_id)
-            st.success("你抽到了 1 張卡片！")
-            saved_file = save_draw_result(result, student_id)
-            #st.info(f"抽卡紀錄已儲存至：{saved_file}")
-            if animate:
-                show_card_images_with_animation(result)
-            else:
-                st.dataframe(result)
-else:
-    st.warning("請先輸入學號才能進行抽卡。")
