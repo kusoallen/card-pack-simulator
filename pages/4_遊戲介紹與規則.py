@@ -19,25 +19,14 @@ st.markdown("""
 歡迎所有學生挑戰策略與運氣，打造最強牌組！
 """)
 
-# ✅ PDF 規則書下載與嵌入
-st.subheader("📜 遊戲規則書")
-PDF_PATH = "game_rules.pdf"  # 請將你的 PDF 檔命名為這個名稱放在同資料夾中
+# ✅ 預覽 Google Drive 中的 PDF
+st.components.v1.html(
+    '<iframe src="https://drive.google.com/file/d/18U4wOx611d2LAWGluWfuuWM01Wtsu7K3/preview" width="100%" height="800px" allow="autoplay"></iframe>',
+    height=800,
+)
 
-if os.path.exists(PDF_PATH):
-    with open(PDF_PATH, "rb") as f:
-        pdf_data = f.read()
-        b64_pdf = base64.b64encode(pdf_data).decode()
-    
-    # 嵌入替代方案：提供點擊連結開啟 PDF
-    st.markdown(
-        f"📖 [點我線上查看規則書](data:application/pdf;base64,{b64_pdf})",
-        unsafe_allow_html=True
-    )
-
-    # 提供下載按鈕
-    st.download_button(
-        label="📥 下載完整規則書 PDF",
-        data=pdf_data,
-        file_name="優等卡牌_遊戲規則.pdf",
-        mime="application/pdf"
-    )
+# ✅ 提供下載按鈕（Google Drive 直接下載連結）
+st.markdown(
+    "[📥 下載 PDF 規則書](https://drive.google.com/uc?export=download&id=18U4wOx611d2LAWGluWfuuWM01Wtsu7K3)",
+    unsafe_allow_html=True
+)
