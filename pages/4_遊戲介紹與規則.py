@@ -25,16 +25,19 @@ PDF_PATH = "game_rules.pdf"  # 請將你的 PDF 檔命名為這個名稱放在�
 
 if os.path.exists(PDF_PATH):
     with open(PDF_PATH, "rb") as f:
-        base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-        pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="800px" type="application/pdf"></iframe>'
-        st.markdown(pdf_display, unsafe_allow_html=True)
+        pdf_data = f.read()
+        b64_pdf = base64.b64encode(pdf_data).decode()
+    
+    # 嵌入替代方案：提供點擊連結開啟 PDF
+    st.markdown(
+        f"📖 [點我線上查看規則書](data:application/pdf;base64,{b64_pdf})",
+        unsafe_allow_html=True
+    )
 
-    with open(PDF_PATH, "rb") as f:
-        st.download_button(
-            label="📥 下載完整規則書 PDF",
-            data=f,
-            file_name="優等卡牌_遊戲規則.pdf",
-            mime="application/pdf"
-        )
-else:
-    st.warning("⚠️ 尚未上傳 game_rules.pdf 規則檔案，請將 PDF 檔放到應用程式目錄下。")
+    # 提供下載按鈕
+    st.download_button(
+        label="📥 下載完整規則書 PDF",
+        data=pdf_data,
+        file_name="優等卡牌_遊戲規則.pdf",
+        mime="application/pdf"
+    )
