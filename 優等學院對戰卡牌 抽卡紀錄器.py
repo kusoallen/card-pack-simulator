@@ -461,7 +461,7 @@ if student_id and "draw_opportunities" not in st.session_state:
 
 
 # ✅ 玩家選擇要抽的卡池
-available_pools = ["基礎包", "羅馬戰士體驗營"]
+available_pools = ["基礎包"] #available_pools = ["基礎包", "羅馬戰士體驗營"]
 selected_pool = st.selectbox("請選擇想抽的卡包：", available_pools)
 
 # ✅ 根據卡池分類篩選卡片
