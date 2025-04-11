@@ -453,11 +453,16 @@ for i, name in enumerate(hero_names):
        
 
 
-# ✅ 學號輸入欄保持可見
-student_id = st.text_input("請輸入學號：", key="student_id_input")
-
-if student_id and "draw_opportunities" not in st.session_state:
+# ✅ 保留輸入學號欄位並每次都檢查最新狀態
+student_id = st.text_input("請輸入學號：", value=st.session_state.get("student_id", ""), key="student_id_input")
+if student_id:
     check_student_eligibility(student_id)
+
+
+#student_id = st.text_input("請輸入學號：", key="student_id_input")
+
+#if student_id and "draw_opportunities" not in st.session_state:
+    #check_student_eligibility(student_id)
 
 
 # ✅ 玩家選擇要抽的卡池
