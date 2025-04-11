@@ -455,7 +455,8 @@ for i, name in enumerate(hero_names):
 
 # ✅ 保留輸入學號欄位並每次都檢查最新狀態
 student_id = st.text_input("請輸入學號：", value=st.session_state.get("student_id", ""), key="student_id_input")
-if student_id:
+if student_id and student_id != st.session_state.get("student_id", ""):
+    st.session_state.pop("draw_opportunities", None)  # 清除舊抽卡機會
     check_student_eligibility(student_id)
 
 
