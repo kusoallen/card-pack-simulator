@@ -49,6 +49,12 @@ with st.sidebar:
     rarity_choice = st.selectbox("選擇稀有度：", ["全部"] + rarities)
     types = sorted(cards_df["類型"].unique())
     type_choice = st.multiselect("卡牌類型：", options=types, default=types)
+
+# ✅ 新增：卡池分類
+    pool_options = sorted(cards_df["卡池分類"].dropna().unique()) if "卡池分類" in cards_df.columns else []
+    pool_choice = st.selectbox("選擇卡池：", ["全部"] + pool_options) if pool_options else "全部"
+
+
     st.divider()
     st.subheader("📊 進階搜尋")
 
