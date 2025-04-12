@@ -28,10 +28,6 @@ if os.path.exists(BACKGROUND_IMAGE_PATH):
 
 st.title("🃏 優等卡牌圖鑑")
 
-# ✅ 新增：卡池分類
-    pool_options = sorted(cards_df["卡池分類"].dropna().unique()) if "卡池分類" in cards_df.columns else []
-    pool_choice = st.selectbox("選擇卡池：", ["全部"] + pool_options) if pool_options else "全部"
-
 
 # 載入卡牌資料
 cards_df = pd.read_excel("優等卡牌 的副本.xlsx", sheet_name="遊戲卡片")
