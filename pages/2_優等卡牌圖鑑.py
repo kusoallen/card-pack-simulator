@@ -28,6 +28,11 @@ if os.path.exists(BACKGROUND_IMAGE_PATH):
 
 st.title("🃏 優等卡牌圖鑑")
 
+# ✅ 新增：卡池分類
+    pool_options = sorted(cards_df["卡池分類"].dropna().unique()) if "卡池分類" in cards_df.columns else []
+    pool_choice = st.selectbox("選擇卡池：", ["全部"] + pool_options) if pool_options else "全部"
+
+
 # 載入卡牌資料
 cards_df = pd.read_excel("優等卡牌 的副本.xlsx", sheet_name="遊戲卡片")
 card_folder = "card_images"
@@ -65,6 +70,10 @@ if name_query:
 if rarity_choice != "全部":
     cards_df = cards_df[cards_df["稀有度"] == rarity_choice]
     filter_changed = True
+if pool_choice != "全部" and "卡池分類" in cards_df.columns:
+    cards_df = cards_df[cards_df["卡池分類"] == pool_choice]
+    filter_changed = True
+
 
 cards_df = cards_df[cards_df["類型"].isin(type_choice)]
 cards_df = cards_df[(cards_df["KN"] >= min_kn) & (cards_df["KN"] <= max_kn)]
