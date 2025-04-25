@@ -83,7 +83,7 @@ def show_background_music_player():
             b64 = base64.b64encode(data).decode()
             st.markdown(
                 f"""
-                <p>🎵 背景音樂：</p>
+                <p>🎵 優等學院對戰卡牌-卡牌為刃：</p>
                 <audio controls loop>
                     <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
                 </audio>
