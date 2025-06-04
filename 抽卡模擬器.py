@@ -21,7 +21,7 @@ client = gspread.authorize(creds)
 SHEET_URL = "https://docs.google.com/spreadsheets/d/1-uKCq-8w_c3EUItPKV9NnEVkRAQiC5I5vW2BZr8NFfg/edit"
 sheet = client.open_by_url(SHEET_URL)
 
-st.set_page_config(page_title="優等學院對戰卡牌 抽卡紀錄器", layout="wide")
+st.set_page_config(page_title="優等學院對戰卡牌 抽卡紀錄器1213", layout="wide")
 st.info("目前讀取的卡池為：" + selected_pool)
 BACKGROUND_IMAGE_PATH = "background.png"
 if os.path.exists(BACKGROUND_IMAGE_PATH):
