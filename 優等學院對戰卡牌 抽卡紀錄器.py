@@ -383,7 +383,7 @@ def show_card_images_with_animation(card_df):
 
 # --- Streamlit 前端 ---
 
-st.title("優等學院對戰卡牌 抽卡紀錄器")
+st.title("優等學院對戰卡牌 抽卡紀錄器(史詩、傳說機率6/4-6/6提升五倍)")
 
 # 背景音樂函式（顯示播放器）
 def show_background_music_player():
@@ -468,7 +468,7 @@ if student_id and student_id != st.session_state.get("student_id", ""):
 
 # ✅ 玩家選擇要抽的卡池
 available_pools = ["基礎包"] #available_pools = ["基礎包", "羅馬戰士體驗營"]
-selected_pool = st.selectbox("請選擇想抽的卡包：(史詩、傳說機率6/4-6/6提升五倍)", available_pools)
+selected_pool = st.selectbox("請選擇想抽的卡包：", available_pools)
 
 # ✅ 根據卡池分類篩選卡片
 all_cards_df = pd.read_excel("優等卡牌 的副本.xlsx", sheet_name="遊戲卡片")
