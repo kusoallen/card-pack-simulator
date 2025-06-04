@@ -383,7 +383,7 @@ def show_card_images_with_animation(card_df):
 
 # --- Streamlit 前端 ---
 
-st.title("優等學院對戰卡牌 抽卡紀錄器(史詩、傳說機率6/4-6/6提升五倍)")
+st.title("優等學院對戰卡牌 抽卡紀錄器")
 
 # 背景音樂函式（顯示播放器）
 def show_background_music_player():
@@ -392,7 +392,7 @@ def show_background_music_player():
         with open(music_path, "rb") as f:
             b64 = base64.b64encode(f.read()).decode()
             components.html(f"""
-                <p>🎵 優等學院對戰卡牌-卡牌為刃：</p>
+                <p>🎵 優等學院對戰卡牌-卡牌為刃(史詩、傳說機率6/4-6/6提升五倍)：</p>
                 <audio id="bgm" controls autoplay loop>
                     <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
                     Your browser does not support the audio element.
